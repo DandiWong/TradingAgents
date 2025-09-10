@@ -87,5 +87,11 @@
   },
   "tool_settings": {
     "online_tools": true
+  },
+  "embedding_settings": {
+    "enabled": true,
+    "provider": "auto",
+    "fallback_to_mock": true,
+    "embedding_dim": 1536
   }
 }
