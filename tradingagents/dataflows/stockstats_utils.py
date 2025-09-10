@@ -4,6 +4,7 @@ from stockstats import wrap
 from typing import Annotated
 import os
 from .config import get_config
+from ..i18n import _
 
 
 class StockstatsUtils:
@@ -84,4 +85,4 @@ class StockstatsUtils:
             indicator_value = matching_rows[indicator].values[0]
             return indicator_value
         else:
-            return "N/A: Not a trading day (weekend or holiday)"
+            return _("error.not_trading_day")

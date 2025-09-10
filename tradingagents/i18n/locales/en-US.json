@@ -1,0 +1,262 @@
+{
+  "app": {
+    "name": "TradingAgents",
+    "description": "Multi-Agents LLM Financial Trading Framework",
+    "version": "1.0.0"
+  },
+  "cli": {
+    "welcome": {
+      "title": "Welcome to TradingAgents CLI",
+      "subtitle": "Multi-Agents LLM Financial Trading Framework",
+      "workflow_title": "Workflow Steps",
+      "workflow_steps": "I. Analyst Team → II. Research Team → III. Trader → IV. Risk Management → V. Portfolio Management",
+      "built_by": "Built by {company}"
+    },
+    "step1": {
+      "title": "Step 1: Ticker Symbol",
+      "prompt": "Enter the ticker symbol to analyze",
+      "default": "SPY"
+    },
+    "step2": {
+      "title": "Step 2: Analysis Date",
+      "prompt": "Enter the analysis date (YYYY-MM-DD)",
+      "default_hint": "Default: {date}"
+    },
+    "step3": {
+      "title": "Step 3: Analysts Team",
+      "prompt": "Select your LLM analyst agents for the analysis"
+    },
+    "step4": {
+      "title": "Step 4: Research Depth",
+      "prompt": "Select your research depth level"
+    },
+    "step5": {
+      "title": "Step 5: LLM Provider",
+      "prompt": "Select your LLM provider"
+    },
+    "step6": {
+      "title": "Step 6: Thinking Agents",
+      "prompt": "Select your thinking agents for analysis"
+    },
+    "selected_analysts": "Selected analysts: {analysts}",
+    "no_selection": "No {item} selected. Exiting...",
+    "invalid_input": "Please enter a valid {input_type}.",
+    "select_analysts": "Select Your [Analysts Team]:",
+    "analysts_instruction": "- Press space to select/deselect analysts\n- Press 'a' to select/deselect all\n- Press enter when done",
+    "must_select_analyst": "You must select at least one analyst.",
+    "done": "done",
+    "selections": "selections",
+    "select_research_depth": "Select Your [Research Depth]:",
+    "navigation_instruction": "- Use arrow keys to navigate\n- Press enter to select",
+    "select_shallow_thinking": "Select Your [Quick Thinking LLM Engine]:",
+    "select_deep_thinking": "Select Your [Deep Thinking LLM Engine]:",
+    "select_llm_provider": "Select Your LLM Provider:",
+    "provider_instruction": "- 🔑 = API Key Configured  🔒 = No API Key Configured\n- Use arrow keys to navigate\n- Press enter to select",
+    "selected_provider": "You selected",
+    "enter_ticker": "Enter ticker symbol to analyze:",
+    "invalid_ticker": "Please enter a valid ticker symbol.",
+    "enter_date": "Enter analysis date (YYYY-MM-DD):",
+    "invalid_date": "Please enter a valid YYYY-MM-DD format date.",
+    "no_research_depth": "No research depth selected. Exiting...",
+    "no_shallow_thinking": "No shallow thinking LLM engine selected. Exiting...",
+    "no_deep_thinking": "No deep thinking LLM engine selected. Exiting...",
+    "no_llm_provider": "No LLM provider selected. Exiting...",
+    "model_selection": {
+      "quick_think_model": "Quick Think Model",
+      "deep_think_model": "Deep Think Model",
+      "alternative": "Alternative",
+      "default_model": "Default Model"
+    }
+  },
+  "analyst_types": {
+    "market": "Market Analyst",
+    "social": "Social Media Analyst",
+    "news": "News Analyst",
+    "fundamentals": "Fundamentals Analyst"
+  },
+  "research_depth": {
+    "shallow": "Shallow - Quick research, few debate and strategy discussion rounds",
+    "medium": "Medium - Middle ground, moderate debate rounds and strategy discussion",
+    "deep": "Deep - Comprehensive research, in depth debate and strategy discussion"
+  },
+  "report": {
+    "current_title": "Current Report",
+    "complete_title": "Complete Analysis Report",
+    "waiting": "Waiting for analysis report...",
+    "sections": {
+      "market_analysis": "Market Analysis",
+      "social_sentiment": "Social Sentiment",
+      "news_analysis": "News Analysis",
+      "fundamentals_analysis": "Fundamentals Analysis",
+      "investment_plan": "Research Team Decision",
+      "trading_plan": "Trading Team Plan",
+      "final_decision": "Portfolio Management Decision"
+    },
+    "team_sections": {
+      "analyst_team": "I. Analyst Team Reports",
+      "research_team": "II. Research Team Decision",
+      "trading_team": "III. Trading Team Plan",
+      "risk_management": "IV. Risk Management Team Decision",
+      "portfolio_management": "V. Portfolio Manager Decision"
+    }
+  },
+  "agents": {
+    "market_analyst": {
+      "role": "You are a trading assistant tasked with analyzing financial markets. Your role is to select the **most relevant indicators** for a given market condition or trading strategy from the following list. The goal is to choose up to **8 indicators** that provide complementary insights without redundancy. Please write your analysis reports and all output content in English.",
+      "indicators": {
+        "moving_averages": "Moving Averages:",
+        "macd": "MACD Related:",
+        "momentum": "Momentum Indicators:",
+        "volatility": "Volatility Indicators:",
+        "volume": "Volume-Based Indicators:",
+        "instruction": "Select indicators that provide diverse and complementary information."
+      },
+      "indicators_description": "Categories and each category's indicators are:\n\nMoving Averages:\n- close_50_sma: 50 SMA: A medium-term trend indicator. Usage: Identify trend direction and serve as dynamic support/resistance. Tips: It lags price; combine with faster indicators for timely signals.\n- close_200_sma: 200 SMA: A long-term trend benchmark. Usage: Confirm overall market trend and identify golden/death cross setups. Tips: It reacts slowly; best for strategic trend confirmation rather than frequent trading entries.\n- close_10_ema: 10 EMA: A responsive short-term average. Usage: Capture quick shifts in momentum and potential entry points. Tips: Prone to noise in choppy markets; use alongside longer averages for filtering false signals.\n\nMACD Related:\n- macd: MACD: Computes momentum via differences of EMAs. Usage: Look for crossovers and divergence as signals of trend changes. Tips: Confirm with other indicators in low-volatility or sideways markets.\n- macds: MACD Signal: An EMA smoothing of the MACD line. Usage: Use crossovers with the MACD line to trigger trades. Tips: Should be part of a broader strategy to avoid false positives.\n- macdh: MACD Histogram: Shows the gap between the MACD line and its signal. Usage: Visualize momentum strength and spot divergence early. Tips: Can be volatile; complement with additional filters in fast-moving markets.\n\nMomentum Indicators:\n- rsi: RSI: Measures momentum to flag overbought/oversold conditions. Usage: Apply 70/30 thresholds and watch for divergence to signal reversals. Tips: In strong trends, RSI may remain extreme; always cross-check with trend analysis.\n\nVolatility Indicators:\n- boll: Bollinger Middle: A 20 SMA serving as the basis for Bollinger Bands. Usage: Acts as a dynamic benchmark for price movement. Tips: Combine with the upper and lower bands to effectively spot breakouts or reversals.\n- boll_ub: Bollinger Upper Band: Typically 2 standard deviations above the middle line. Usage: Signals potential overbought conditions and breakout zones. Tips: Confirm signals with other tools; prices may ride the band in strong trends.\n- boll_lb: Bollinger Lower Band: Typically 2 standard deviations below the middle line. Usage: Indicates potential oversold conditions. Tips: Use additional analysis to avoid false reversal signals.\n- atr: ATR: Averages true range to measure volatility. Usage: Set stop-loss levels and adjust position sizes based on current market volatility. Tips: It's a reactive measure, so use it as part of a broader risk management strategy.\n\nVolume-Based Indicators:\n- vwma: VWMA: A moving average weighted by volume. Usage: Confirm trends by integrating price action with volume data. Tips: Watch for skewed results from volume spikes; use in combination with other volume analyses.",
+      "select_indicators_instruction": "- Select indicators that provide diverse and complementary information. Avoid redundancy (e.g., do not select both rsi and stochrsi). Also briefly explain why they are suitable for the given market context. When you tool call, please use the exact name of the indicators provided above as they are defined parameters, otherwise your call will fail. Please make sure to call get_YFin_data first to retrieve the CSV that is needed to generate indicators.",
+      "report_instruction": "Write a very detailed and nuanced report of the trends you observe. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
+    },
+    "social_analyst": {
+      "role": "You are a social media and company specific news researcher/analyst tasked with analyzing social media posts, recent company news, and public sentiment for a specific company over the past week. You will be given a company's name your objective is to write a comprehensive long report detailing your analysis, insights, and implications for traders and investors on this company's current state after looking at social media and what people are saying about that company, analyzing sentiment data of what people feel each day about the company, and looking at recent company news. Try to look at all sources possible from social media to sentiment to news. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
+    },
+    "news_analyst": {
+      "role": "You are a news researcher tasked with analyzing recent news and trends over the past week. Please write a comprehensive report of the current state of the world that is relevant for trading and macroeconomics. Look at news from EODHD, and finnhub to be comprehensive. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
+    },
+    "fundamentals_analyst": {
+      "role": "You are a researcher tasked with analyzing fundamental information over the past week about a company. Please write a comprehensive report of the company's fundamental information such as financial documents, company profile, basic company financials, company financial history, insider sentiment and insider transactions to gain a full view of the company's fundamental information to inform traders. Make sure to include as much detail as possible. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
+    },
+    "bull_researcher": {
+      "role": "You are a Bull Analyst advocating for investing in the stock. Please write your analysis reports and all output content in English.",
+      "focus_areas": {
+        "growth": "Growth Potential:",
+        "advantages": "Competitive Advantages:",
+        "indicators": "Positive Indicators:",
+        "counterpoints": "Bear Counterpoints:",
+        "engagement": "Engagement:"
+      }
+    },
+    "bear_researcher": {
+      "role": "You are a Bear Analyst advocating against investing in the stock. Please write your analysis reports and all output content in English.",
+      "focus_areas": {
+        "risks": "Risk Factors:",
+        "weaknesses": "Weaknesses:",
+        "concerns": "Negative Indicators:",
+        "bull_counterpoints": "Bull Counterpoints:",
+        "engagement": "Engagement:"
+      }
+    },
+    "research_manager": {
+      "role": "As the portfolio manager and debate facilitator, your role is to critically evaluate this round of debate and make a definitive decision: align with the bear analyst, the bull analyst, or choose Hold only if it is strongly justified based on the arguments presented. Please write your analysis reports and all output content in English."
+    },
+    "trader": {
+      "role": "You are a trading agent analyzing market data to make investment decisions. Please write your analysis reports and all output content in English.",
+      "plan_intro": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}."
+    },
+    "risk_analyst": {
+      "risky": "Aggressive Analyst",
+      "neutral": "Neutral Analyst",
+      "safe": "Conservative Analyst",
+      "portfolio_manager": "Portfolio Manager"
+    },
+    "system": {
+      "base_instruction": "You are a helpful AI assistant, collaborating with other assistants. Use the provided tools to progress towards answering the question. If you are unable to fully answer, that's OK; another assistant with different tools will help where you left off. Execute what you can to make progress. If you or any other assistant has the FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** or deliverable, prefix your response with FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** so the team knows to stop.",
+      "reference_info": "For your reference, the current date is {current_date}. We are looking at the company {ticker}",
+      "reference_info_news": "For your reference, the current date is {current_date}. We are analyzing global news and macroeconomic trends."
+    }
+  },
+  "ui": {
+    "trader": "Trader",
+    "tool_params": {
+      "symbol": "symbol",
+      "start_date": "start_date",
+      "end_date": "end_date",
+      "indicator": "indicator",
+      "curr_date": "curr_date",
+      "look_back_days": "look_back_days",
+      "ticker": "ticker",
+      "indicators": {
+        "vwma": "Volume Weighted Moving Average",
+        "rsi": "Relative Strength Index",
+        "macd": "MACD",
+        "boll": "Bollinger Bands Middle",
+        "boll_ub": "Bollinger Bands Upper",
+        "boll_lb": "Bollinger Bands Lower",
+        "atr": "Average True Range",
+        "close_50_sma": "50-day Simple Moving Average",
+        "close_200_sma": "200-day Simple Moving Average",
+        "close_10_ema": "10-day Exponential Moving Average",
+        "macds": "MACD Signal",
+        "macdh": "MACD Histogram",
+        "stochrsi": "Stochastic RSI"
+      }
+    }
+  },
+  "status": {
+    "pending": "pending",
+    "in_progress": "in_progress",
+    "completed": "completed",
+    "error": "error"
+  },
+  "team": {
+    "analyst": "Analyst Team",
+    "research": "Research Team",
+    "trading": "Trading Team",
+    "risk_management": "Risk Management",
+    "portfolio_management": "Portfolio Management"
+  },
+  "ui": {
+    "table_headers": {
+      "team": "Team",
+      "agent": "Agent",
+      "status": "Status",
+      "time": "Time",
+      "type": "Type",
+      "content": "Content"
+    },
+    "panel_titles": {
+      "progress": "Progress",
+      "messages_tools": "Messages & Tools",
+      "current_report": "Current Report",
+      "stats": "Statistics"
+    },
+    "stats": {
+      "tool_calls": "Tool Calls",
+      "llm_calls": "LLM Calls",
+      "generated_reports": "Generated Reports",
+      "format": "{tool_calls} | {llm_calls} | {reports}"
+    }
+  },
+  "error": {
+    "no_ticker": "No ticker symbol provided. Exiting...",
+    "no_date": "No date provided. Exiting...",
+    "no_analysts": "No analysts selected. Exiting...",
+    "no_research_depth": "No research depth selected. Exiting...",
+    "no_shallow_thinking": "No shallow thinking llm engine selected. Exiting...",
+    "no_deep_thinking": "No deep thinking llm engine selected. Exiting...",
+    "no_llm_provider": "No LLM provider selected. Exiting...",
+    "date_future": "Error: Analysis date cannot be in the future",
+    "date_format": "Error: Invalid date format. Please use YYYY-MM-DD",
+    "import_failed": "Failed to import TradingAgentsGraph: {error}",
+    "dependency_check": "This may be due to dependency issues. Please check your environment.",
+    "missing_dependencies": "Missing critical dependencies: {packages}",
+    "running_dependency_check": "Running full dependency check...",
+    "config_load_failed": "Warning: Could not load config from {path}: {error}",
+    "using_default_config": "Using default configuration.",
+    "config_save_failed": "Warning: Could not save config to {path}: {error}",
+    "must_select_analyst": "You must select at least one analyst.",
+    "not_trading_day": "N/A: Not a trading day (weekend or holiday)"
+  },
+  "system": {
+    "analyzing": "Analyzing {ticker} on {date}...",
+    "selected_ticker": "Selected ticker: {ticker}",
+    "analysis_date": "Analysis date: {date}",
+    "completed": "Completed analysis for {date}",
+    "spinner_text": "in_progress"
+  },
+  "reports": {
+    "indicator_values_from_to": "values from {before} to {end_date}",
+    "no_description_available": "No description available"
+  }
+}

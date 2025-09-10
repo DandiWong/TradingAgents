@@ -14,6 +14,7 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+from ..i18n import _
 
 
 def get_finnhub_news(
@@ -546,10 +547,10 @@ def get_stock_stats_indicators_window(
             curr_date = curr_date - relativedelta(days=1)
 
     result_str = (
-        f"## {indicator} values from {before.strftime('%Y-%m-%d')} to {end_date}:\n\n"
+        f"## {indicator} {_('reports.indicator_values_from_to', before=before.strftime('%Y-%m-%d'), end_date=end_date)}:\n\n"
         + ind_string
         + "\n\n"
-        + best_ind_params.get(indicator, "No description available.")
+        + best_ind_params.get(indicator, _("reports.no_description_available"))
     )
 
     return result_str
@@ -706,102 +707,63 @@ def get_stock_news_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
-
-    return response.output[1].content[0].text
+    try:
+        response = client.chat.completions.create(
+            model=config["quick_think_llm"],
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period."
+                }
+            ],
+            temperature=1,
+            max_tokens=4096,
+            top_p=1,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error fetching stock news: {str(e)}"
 
 
 def get_global_news_openai(curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
-
-    return response.output[1].content[0].text
+    try:
+        response = client.chat.completions.create(
+            model=config["quick_think_llm"],
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period."
+                }
+            ],
+            temperature=1,
+            max_tokens=4096,
+            top_p=1,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error fetching global news: {str(e)}"
 
 
 def get_fundamentals_openai(ticker, curr_date):
     config = get_config()
     client = OpenAI(base_url=config["backend_url"])
 
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc",
-                    }
-                ],
-            }
-        ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
-            {
-                "type": "web_search_preview",
-                "user_location": {"type": "approximate"},
-                "search_context_size": "low",
-            }
-        ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
-
-    return response.output[1].content[0].text
+    try:
+        response = client.chat.completions.create(
+            model=config["quick_think_llm"],
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc"
+                }
+            ],
+            temperature=1,
+            max_tokens=4096,
+            top_p=1,
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"Error fetching fundamentals: {str(e)}"

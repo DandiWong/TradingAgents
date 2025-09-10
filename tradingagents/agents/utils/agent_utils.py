@@ -13,6 +13,8 @@ from langchain_openai import ChatOpenAI
 import tradingagents.dataflows.interface as interface
 from tradingagents.config_manager import get_config
 from langchain_core.messages import HumanMessage
+from tradingagents.i18n import _, init_i18n
+from tradingagents.config_manager import get_config
 
 
 def create_msg_delete():
@@ -20,11 +22,16 @@ def create_msg_delete():
         """Clear messages and add placeholder for Anthropic compatibility"""
         messages = state["messages"]
         
+        # Initialize i18n if needed
+        config_manager = get_config()
+        language = config_manager.get_language()
+        init_i18n(locale_dir="./tradingagents/i18n/locales", default_locale=language)
+        
         # Remove all messages
         removal_operations = [RemoveMessage(id=m.id) for m in messages]
         
         # Add a minimal placeholder message
-        placeholder = HumanMessage(content="Continue")
+        placeholder = HumanMessage(content=_("system.continue"))
         
         return {"messages": removal_operations + [placeholder]}
     
@@ -417,3 +424,30 @@ class Toolkit:
         )
 
         return openai_fundamentals_results
+
+
+def translate_tool_params(param_name: str, param_value: str) -> str:
+    """
+    Translate tool parameters for display in the UI.
+    
+    Args:
+        param_name (str): The parameter name (e.g., 'symbol', 'indicator')
+        param_value (str): The parameter value
+        
+    Returns:
+        str: Translated parameter name with original value
+    """
+    # Get the translation for the parameter name
+    translated_param = _(f"ui.tool_params.{param_name}")
+    
+    # For indicators, also translate the indicator value if it's in the indicators dict
+    if param_name == "indicator":
+        try:
+            # Try to translate the indicator value
+            translated_indicator = _(f"ui.tool_params.indicators.{param_value}")
+            return f"{translated_param}: {translated_indicator}"
+        except:
+            # If indicator translation fails, return the original value
+            return f"{translated_param}: {param_value}"
+    
+    return f"{translated_param}: {param_value}"

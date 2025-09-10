@@ -147,6 +147,14 @@ class ConfigManager:
         """Get an embedding setting value."""
         return self._config.get("embedding_settings", {}).get(key, default)
     
+    def get_language(self) -> str:
+        """Get the current language setting."""
+        return self._config.get("language", "en-US")
+    
+    def set_language(self, language: str) -> None:
+        """Set the current language."""
+        self._config["language"] = language
+    
     def set_active_provider(self, provider: str) -> None:
         """Set the active LLM provider."""
         self._config["active_provider"] = provider

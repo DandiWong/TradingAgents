@@ -1,9 +1,197 @@
 import questionary
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Tuple, Dict, Any
 from rich.console import Console
 
 from cli.models import AnalystType
 from tradingagents.config_manager import get_config
+from tradingagents.i18n import _
+
+# Create a custom checkbox function with i18n support
+def localized_checkbox(
+    message: str,
+    choices: List[questionary.Choice],
+    instruction: Optional[str] = None,
+    validate: Optional[callable] = None,
+    style: Optional[questionary.Style] = None,
+) -> questionary.Question:
+    """Create a localized checkbox prompt with translated 'done' text."""
+    
+    # Import required modules
+    from prompt_toolkit.application import Application
+    from prompt_toolkit.key_binding import KeyBindings
+    from prompt_toolkit.keys import Keys
+    from prompt_toolkit.styles import Style
+    from questionary.prompts.common import Choice, InquirerControl, Separator
+    from questionary.prompts.common import create_inquirer_layout
+    from questionary.constants import DEFAULT_QUESTION_PREFIX, DEFAULT_SELECTED_POINTER
+    from questionary.question import Question
+    from questionary.utils import used_kwargs
+    
+    # Get translation for 'done' and 'selections'
+    done_text = _("cli.done")
+    selections_text = _("cli.selections")
+    
+    # Create the InquirerControl (same as original)
+    ic = InquirerControl(
+        choices,
+        None,  # default
+        pointer=DEFAULT_SELECTED_POINTER,
+        initial_choice=None,
+        show_description=True,
+    )
+    
+    def get_prompt_tokens():
+        tokens = []
+        tokens.append(("class:qmark", DEFAULT_QUESTION_PREFIX))
+        tokens.append(("class:question", " {} ".format(message)))
+        
+        if ic.is_answered:
+            nbr_selected = len(ic.selected_options)
+            if nbr_selected == 0:
+                tokens.append(("class:answer", done_text))
+            elif nbr_selected == 1:
+                if isinstance(ic.get_selected_values()[0].title, list):
+                    ts = ic.get_selected_values()[0].title
+                    tokens.append(
+                        (
+                            "class:answer",
+                            "".join([token[1] for token in ts]),
+                        )
+                    )
+                else:
+                    tokens.append(
+                        (
+                            "class:answer",
+                            "[{}]".format(ic.get_selected_values()[0].title),
+                        )
+                    )
+            else:
+                # Use translated format: "done (2 selections)"
+                tokens.append(
+                    ("class:answer", f"{done_text} ({nbr_selected} {selections_text})")
+                )
+        else:
+            if instruction is not None:
+                tokens.append(("class:instruction", instruction))
+            else:
+                tokens.append(
+                    (
+                        "class:instruction",
+                        "(Use arrow keys to move, "
+                        "<space> to select, "
+                        "<a> to toggle, "
+                        "<i> to invert)",
+                    )
+                )
+        return tokens
+    
+    def get_selected_values() -> List[Any]:
+        return [c.value for c in ic.get_selected_values()]
+    
+    def perform_validation(selected_values: List[str]) -> bool:
+        if validate is None:
+            return True
+        verdict = validate(selected_values)
+        valid = verdict is True
+        
+        if not valid:
+            if verdict is False:
+                from questionary.constants import INVALID_INPUT
+                error_text = INVALID_INPUT
+            else:
+                error_text = str(verdict)
+            
+            from prompt_toolkit.formatted_text import FormattedText
+            error_message = FormattedText([("class:validation-toolbar", error_text)])
+        
+        ic.error_message = (
+            error_message if not valid and ic.submission_attempted else None
+        )
+        
+        return valid
+    
+    # Create layout and bindings (simplified version)
+    layout = create_inquirer_layout(ic, get_prompt_tokens)
+    
+    bindings = KeyBindings()
+    
+    @bindings.add(Keys.ControlQ, eager=True)
+    @bindings.add(Keys.ControlC, eager=True)
+    def _exit(event):
+        event.app.exit(exception=KeyboardInterrupt, style="class:aborting")
+    
+    @bindings.add(" ", eager=True)
+    def toggle(_event):
+        pointed_choice = ic.get_pointed_at().value
+        if pointed_choice in ic.selected_options:
+            ic.selected_options.remove(pointed_choice)
+        else:
+            ic.selected_options.append(pointed_choice)
+        perform_validation(get_selected_values())
+    
+    @bindings.add("a", eager=True)
+    def all(_event):
+        all_selected = True
+        for c in ic.choices:
+            if (
+                not isinstance(c, Separator)
+                and c.value not in ic.selected_options
+                and not c.disabled
+            ):
+                ic.selected_options.append(c.value)
+                all_selected = False
+        if all_selected:
+            ic.selected_options = []
+        perform_validation(get_selected_values())
+    
+    @bindings.add("i", eager=True)
+    def invert(_event):
+        inverted_selection = [
+            c.value
+            for c in ic.choices
+            if not isinstance(c, Separator)
+            and c.value not in ic.selected_options
+            and not c.disabled
+        ]
+        ic.selected_options = inverted_selection
+        perform_validation(get_selected_values())
+    
+    def move_cursor_down(event):
+        ic.select_next()
+        while not ic.is_selection_valid():
+            ic.select_next()
+    
+    def move_cursor_up(event):
+        ic.select_previous()
+        while not ic.is_selection_valid():
+            ic.select_previous()
+    
+    bindings.add(Keys.Down, eager=True)(move_cursor_down)
+    bindings.add(Keys.Up, eager=True)(move_cursor_up)
+    bindings.add("j", eager=True)(move_cursor_down)
+    bindings.add("k", eager=True)(move_cursor_up)
+    
+    @bindings.add(Keys.ControlM, eager=True)
+    def set_answer(event):
+        selected_values = get_selected_values()
+        ic.submission_attempted = True
+        
+        if perform_validation(selected_values):
+            ic.is_answered = True
+            event.app.exit(result=selected_values)
+    
+    @bindings.add(Keys.Any)
+    def other(_event):
+        """Disallow inserting other text."""
+    
+    return Question(
+        Application(
+            layout=layout,
+            key_bindings=bindings,
+            style=style or questionary.constants.DEFAULT_STYLE,
+            **used_kwargs({}, Application.__init__),
+        )
+    )
 
 console = Console()
 
@@ -35,19 +223,35 @@ def _get_fallback_deep_models() -> Dict[str, List[Tuple[str, str]]]:
         "ollama": [("Deep Think: llama3.1", "llama3.1")],
     }
 
-ANALYST_ORDER = [
-    ("Market Analyst", AnalystType.MARKET),
-    ("Social Media Analyst", AnalystType.SOCIAL),
-    ("News Analyst", AnalystType.NEWS),
-    ("Fundamentals Analyst", AnalystType.FUNDAMENTALS),
-]
+def get_analyst_order():
+    """Get analyst options with translations."""
+    return [
+        (_("analyst_types.market"), AnalystType.MARKET),
+        (_("analyst_types.social"), AnalystType.SOCIAL),
+        (_("analyst_types.news"), AnalystType.NEWS),
+        (_("analyst_types.fundamentals"), AnalystType.FUNDAMENTALS),
+    ]
+
+
+def get_analyst_display_name(analyst_type: AnalystType) -> str:
+    """Get translated display name for analyst type."""
+    analyst_names = {
+        AnalystType.MARKET: _("analyst_types.market"),
+        AnalystType.SOCIAL: _("analyst_types.social"),
+        AnalystType.NEWS: _("analyst_types.news"),
+        AnalystType.FUNDAMENTALS: _("analyst_types.fundamentals"),
+    }
+    return analyst_names.get(analyst_type, analyst_type.value)
+
+# Keep the old name for backward compatibility
+ANALYST_ORDER = get_analyst_order()
 
 
 def get_ticker() -> str:
     """Prompt the user to enter a ticker symbol."""
     ticker = questionary.text(
-        "Enter the ticker symbol to analyze:",
-        validate=lambda x: len(x.strip()) > 0 or "Please enter a valid ticker symbol.",
+        _("cli.enter_ticker"),
+        validate=lambda x: len(x.strip()) > 0 or _("cli.invalid_ticker"),
         style=questionary.Style(
             [
                 ("text", "fg:green"),
@@ -57,7 +261,7 @@ def get_ticker() -> str:
     ).ask()
 
     if not ticker:
-        console.print("\n[red]No ticker symbol provided. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_ticker')}[/red]")
         exit(1)
 
     return ticker.strip().upper()
@@ -78,9 +282,9 @@ def get_analysis_date() -> str:
             return False
 
     date = questionary.text(
-        "Enter the analysis date (YYYY-MM-DD):",
+        _("cli.enter_date"),
         validate=lambda x: validate_date(x.strip())
-        or "Please enter a valid date in YYYY-MM-DD format.",
+        or _("cli.invalid_date"),
         style=questionary.Style(
             [
                 ("text", "fg:green"),
@@ -90,7 +294,7 @@ def get_analysis_date() -> str:
     ).ask()
 
     if not date:
-        console.print("\n[red]No date provided. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_date')}[/red]")
         exit(1)
 
     return date.strip()
@@ -98,13 +302,13 @@ def get_analysis_date() -> str:
 
 def select_analysts() -> List[AnalystType]:
     """Select analysts using an interactive checkbox."""
-    choices = questionary.checkbox(
-        "Select Your [Analysts Team]:",
+    choices = localized_checkbox(
+        _("cli.select_analysts"),
         choices=[
-            questionary.Choice(display, value=value) for display, value in ANALYST_ORDER
+            questionary.Choice(display, value=value) for display, value in get_analyst_order()
         ],
-        instruction="\n- Press Space to select/unselect analysts\n- Press 'a' to select/unselect all\n- Press Enter when done",
-        validate=lambda x: len(x) > 0 or "You must select at least one analyst.",
+        instruction=_("cli.analysts_instruction"),
+        validate=lambda x: len(x) > 0 or _("cli.must_select_analyst"),
         style=questionary.Style(
             [
                 ("checkbox-selected", "fg:green"),
@@ -116,7 +320,7 @@ def select_analysts() -> List[AnalystType]:
     ).ask()
 
     if not choices:
-        console.print("\n[red]No analysts selected. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_analysts')}[/red]")
         exit(1)
 
     return choices
@@ -127,17 +331,27 @@ def select_research_depth() -> int:
 
     # Define research depth options with their corresponding values
     DEPTH_OPTIONS = [
-        ("Shallow - Quick research, few debate and strategy discussion rounds", 1),
-        ("Medium - Middle ground, moderate debate rounds and strategy discussion", 3),
-        ("Deep - Comprehensive research, in depth debate and strategy discussion", 5),
+        (_("cli.research_depth.shallow"), 1),
+        (_("cli.research_depth.medium"), 3),
+        (_("cli.research_depth.deep"), 5),
     ]
 
+    # Get translations with fallback
+    select_text = _("cli.select_research_depth")
+    nav_text = _("cli.navigation_instruction")
+    
+    # Ensure translations are working
+    if select_text == "cli.select_research_depth":
+        select_text = "Select Your [Research Depth]:"
+    if nav_text == "cli.navigation_instruction":
+        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
+    
     choice = questionary.select(
-        "Select Your [Research Depth]:",
+        select_text,
         choices=[
             questionary.Choice(display, value=value) for display, value in DEPTH_OPTIONS
         ],
-        instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
+        instruction=nav_text,
         style=questionary.Style(
             [
                 ("selected", "fg:yellow noinherit"),
@@ -148,7 +362,7 @@ def select_research_depth() -> int:
     ).ask()
 
     if choice is None:
-        console.print("\n[red]No research depth selected. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_research_depth')}[/red]")
         exit(1)
 
     return choice
@@ -169,25 +383,35 @@ def select_shallow_thinking_agent(provider) -> str:
     else:
         # Create options from configured models
         quick_think_model = available_models.get("quick_think", "")
-        model_options = [(f"Quick Think Model: {quick_think_model}", quick_think_model)]
+        model_options = [(f"{_('cli.model_selection.quick_think_model')}: {quick_think_model}", quick_think_model)]
         
         # Add other available models
         for model_type, model_name in available_models.items():
             if model_type != "quick_think" and model_name:
-                model_options.append((f"Alternative: {model_name}", model_name))
+                model_options.append((f"{_('cli.model_selection.alternative')}: {model_name}", model_name))
     
     # If still no options, use fallback
     if not model_options:
         SHALLOW_AGENT_OPTIONS = _get_fallback_shallow_models()
-        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [("Default Model", "gpt-4o-mini")])
+        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o-mini")])
 
+    # Get translations with fallback
+    select_text = _("cli.select_shallow_thinking")
+    nav_text = _("cli.navigation_instruction")
+    
+    # Ensure translations are working
+    if select_text == "cli.select_shallow_thinking":
+        select_text = "Select Your [Quick Thinking LLM Engine]:"
+    if nav_text == "cli.navigation_instruction":
+        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
+    
     choice = questionary.select(
-        "Select Your [Quick-Thinking LLM Engine]:",
+        select_text,
         choices=[
             questionary.Choice(display, value=value)
             for display, value in model_options
         ],
-        instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
+        instruction=nav_text,
         style=questionary.Style(
             [
                 ("selected", "fg:magenta noinherit"),
@@ -199,7 +423,7 @@ def select_shallow_thinking_agent(provider) -> str:
 
     if choice is None:
         console.print(
-            "\n[red]No shallow thinking llm engine selected. Exiting...[/red]"
+            f"\n[red]{_('error.no_shallow_thinking')}[/red]"
         )
         exit(1)
 
@@ -225,25 +449,35 @@ def select_deep_thinking_agent(provider) -> str:
     else:
         # Create options from configured models
         deep_think_model = available_models.get("deep_think", "")
-        model_options = [(f"Deep Think Model: {deep_think_model}", deep_think_model)]
+        model_options = [(f"{_('cli.model_selection.deep_think_model')}: {deep_think_model}", deep_think_model)]
         
         # Add other available models
         for model_type, model_name in available_models.items():
             if model_type != "deep_think" and model_name:
-                model_options.append((f"Alternative: {model_name}", model_name))
+                model_options.append((f"{_('cli.model_selection.alternative')}: {model_name}", model_name))
     
     # If still no options, use fallback
     if not model_options:
         DEEP_AGENT_OPTIONS = _get_fallback_deep_models()
-        model_options = DEEP_AGENT_OPTIONS.get(provider.lower(), [("Default Model", "gpt-4o")])
+        model_options = DEEP_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o")])
+    
+    # Get translations with fallback
+    select_text = _("cli.select_deep_thinking")
+    nav_text = _("cli.navigation_instruction")
+    
+    # Ensure translations are working
+    if select_text == "cli.select_deep_thinking":
+        select_text = "Select Your [Deep Thinking LLM Engine]:"
+    if nav_text == "cli.navigation_instruction":
+        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
     
     choice = questionary.select(
-        "Select Your [Deep-Thinking LLM Engine]:",
+        select_text,
         choices=[
             questionary.Choice(display, value=value)
             for display, value in model_options
         ],
-        instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
+        instruction=nav_text,
         style=questionary.Style(
             [
                 ("selected", "fg:magenta noinherit"),
@@ -254,7 +488,7 @@ def select_deep_thinking_agent(provider) -> str:
     ).ask()
 
     if choice is None:
-        console.print("\n[red]No deep thinking llm engine selected. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_deep_thinking')}[/red]")
         exit(1)
 
     # Save the selected model configuration
@@ -287,9 +521,9 @@ def select_llm_provider() -> tuple[str, str]:
         choices.append(questionary.Choice(choice_text, value=(provider_name, url)))
     
     choice = questionary.select(
-        "Select your LLM Provider:",
+        _("cli.select_llm_provider"),
         choices=choices,
-        instruction="\n- 🔑 = API key configured  🔒 = No API key configured\n- Use arrow keys to navigate\n- Press Enter to select",
+        instruction=_("cli.provider_instruction"),
         style=questionary.Style(
             [
                 ("selected", "fg:magenta noinherit"),
@@ -300,11 +534,11 @@ def select_llm_provider() -> tuple[str, str]:
     ).ask()
     
     if choice is None:
-        console.print("\n[red]no LLM provider selected. Exiting...[/red]")
+        console.print(f"\n[red]{_('error.no_llm_provider')}[/red]")
         exit(1)
     
     display_name, url = choice
-    print(f"You selected: {display_name}\tURL: {url}")
+    print(f"{_('cli.selected_provider')}: {display_name}\tURL: {url}")
     
     # Set as active provider
     config_manager.set_active_provider(display_name)
