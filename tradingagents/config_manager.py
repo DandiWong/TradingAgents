@@ -85,6 +85,12 @@ class ConfigManager:
             },
             "tool_settings": {
                 "online_tools": True
+            },
+            "embedding_settings": {
+                "enabled": True,
+                "provider": "auto",
+                "fallback_to_mock": True,
+                "embedding_dim": 1536
             }
         }
     
@@ -137,6 +143,10 @@ class ConfigManager:
         """Get a tool setting value."""
         return self._config.get("tool_settings", {}).get(key, default)
     
+    def get_embedding_setting(self, key: str, default: Any = None) -> Any:
+        """Get an embedding setting value."""
+        return self._config.get("embedding_settings", {}).get(key, default)
+    
     def set_active_provider(self, provider: str) -> None:
         """Set the active LLM provider."""
         self._config["active_provider"] = provider
@@ -187,7 +197,9 @@ def get_default_config_dict() -> Dict[str, Any]:
     """Get default configuration dictionary for backward compatibility."""
     config = get_config()
     
-    return {
+    # Return both flat config for legacy support and full config for embedding
+    full_config = config.get_config()
+    flat_config = {
         "project_dir": config.get_project_setting("project_dir"),
         "results_dir": config.get_project_setting("results_dir"),
         "data_dir": config.get_project_setting("data_dir"),
@@ -203,5 +215,9 @@ def get_default_config_dict() -> Dict[str, Any]:
         "api_keys": {
             provider: config.get_api_key(provider)
             for provider in config.get_available_providers().keys()
-        }
+        },
+        # Include full config for embedding support
+        "_full_config": full_config
     }
+    
+    return flat_config
