@@ -1,0 +1,91 @@
+{
+  "project_settings": {
+    "project_dir": "./tradingagents",
+    "results_dir": "./results",
+    "data_dir": "./data",
+    "data_cache_dir": "./tradingagents/dataflows/data_cache"
+  },
+  "llm_providers": {
+    "openai": {
+      "models": {
+        "quick_think": "gpt-5",
+        "deep_think": "gpt-5"
+      },
+      "base_url": "https://api.openai.com/v1",
+      "api_key": "your-openai-api-key-here",
+      "description": "Original OpenAI models"
+    },
+    "anthropic": {
+      "models": {
+        "quick_think": "claude-sonnet-4",
+        "deep_think": "claude-opus-4"
+      },
+      "base_url": "https://api.anthropic.com/",
+      "api_key": "your-anthropic-api-key-here",
+      "description": "Anthropic Claude models"
+    },
+    "google": {
+      "models": {
+        "quick_think": "gemini-2.5-flash",
+        "deep_think": "gemini-2.5-pro"
+      },
+      "base_url": "https://generativelanguage.googleapis.com/v1",
+      "api_key": "your-google-api-key-here",
+      "description": "Google Gemini models"
+    },
+    "openrouter": {
+      "models": {
+        "quick_think": "z-ai/glm-4.5-air:free",
+        "deep_think": "deepseek/deepseek-chat-v3.1:free"
+      },
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key": "your-openrouter-api-key-here",
+      "description": "Aggregator service with multiple model providers"
+    },
+    "kimi (moonshot)": {
+      "models": {
+        "quick_think": "kimi-k2-0905-preview",
+        "deep_think": "kimi-k2-0905-preview"
+      },
+      "base_url": "https://api.moonshot.cn/v1",
+      "api_key": "your-moonshot-api-key-here",
+      "description": "Chinese AI models with strong multilingual capabilities"
+    },
+    "zhipu ai": {
+      "models": {
+        "quick_think": "glm-4.5-air",
+        "deep_think": "glm-4.5"
+      },
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "api_key": "your-zhipu-api-key-here",
+      "description": "Developer of GLM series models"
+    },
+    "deepseek": {
+      "models": {
+        "quick_think": "deepseek-chat",
+        "deep_think": "deepseek-reasoner"
+      },
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key": "your-deepseek-api-key-here",
+      "description": "Advanced reasoning models"
+    },
+    "ollama": {
+      "models": {
+        "quick_think": "llama3.1",
+        "deep_think": "llama3.1"
+      },
+      "base_url": "http://localhost:11434/v1",
+      "api_key": "",
+      "description": "Local models (no API key required)"
+    }
+  },
+  "active_provider": "openai",
+  "debate_settings": {
+    "max_debate_rounds": 1,
+    "max_risk_discuss_rounds": 1,
+    "max_recur_limit": 100
+  },
+  "tool_settings": {
+    "online_tools": true
+  }
+}

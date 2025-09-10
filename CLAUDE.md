@@ -46,13 +46,25 @@ pip install -r requirements.txt
 
 # Required API keys
 export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
+
+# API Key Configuration (two methods):
+# Method 1: Environment variables (fallback)
 export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+export ANTHROPIC_API_KEY=$YOUR_ANTHROPIC_API_KEY
+export GOOGLE_API_KEY=$YOUR_GOOGLE_API_KEY
+export MOONSHOT_API_KEY=$YOUR_MOONSHOT_API_KEY
+export ZHIPUAI_API_KEY=$YOUR_ZHIPUAI_API_KEY
+export DEEPSEEK_API_KEY=$YOUR_DEEPSEEK_API_KEY
+
+# Method 2: Configuration file (recommended)
+# Edit tradingagents/default_config.py and set API keys in the "api_keys" section
 ```
 
 ## Configuration
 
 The system uses a configuration-driven approach in `tradingagents/default_config.py`:
-- **LLM Settings**: Provider selection (OpenAI, OpenRouter, Google), model choices for deep/quick thinking
+- **LLM Settings**: Provider selection (OpenAI, Anthropic, Google, OpenRouter, Kimi, Zhipu AI, DeepSeek), model choices for deep/quick thinking
+- **API Keys**: Configurable API keys for each provider in the `api_keys` section
 - **Debate Settings**: Number of rounds for investment and risk discussions
 - **Data Settings**: Cache directories, online tools toggle
 - **Results Directory**: Where analysis reports and logs are stored
@@ -82,7 +94,40 @@ Analysis results are stored in `./results/{ticker}/{date}/` with:
 
 ## Configuration Notes
 
-- Default uses OpenRouter with Gemini models for cost efficiency
+- Default uses OpenAI with o4-mini and gpt-4o-mini models for cost efficiency
 - For production, consider using stronger models like `gpt-4o` and `o1-preview`
 - `online_tools=True` enables real-time data, `False` uses cached data
 - Debate rounds can be adjusted based on desired analysis depth
+
+## Supported LLM Providers
+
+### OpenAI Compatible Providers
+These providers use the OpenAI API format:
+
+- **Kimi (Moonshot)**: Chinese AI models with strong multilingual capabilities
+  - Models: `moonshot-v1-8k`, `moonshot-v1-32k`, `moonshot-v1-128k`
+  - API Key: Configure in `config["api_keys"]["kimi (moonshot)"]` or set `MOONSHOT_API_KEY`
+  
+- **Zhipu AI**: Developer of GLM series models
+  - Models: `glm-4-flash`, `glm-4-air`, `glm-4-airx`, `glm-4-plus`
+  - API Key: Configure in `config["api_keys"]["zhipu ai"]` or set `ZHIPUAI_API_KEY`
+  
+- **DeepSeek**: Advanced reasoning models
+  - Models: `deepseek-chat`, `deepseek-coder`
+  - API Key: Configure in `config["api_keys"]["deepseek"]` or set `DEEPSEEK_API_KEY`
+
+### Native API Providers
+- **OpenAI**: Original OpenAI models
+  - API Key: Configure in `config["api_keys"]["openai"]` or set `OPENAI_API_KEY`
+- **Anthropic**: Claude models
+  - API Key: Configure in `config["api_keys"]["anthropic"]` or set `ANTHROPIC_API_KEY`
+- **Google**: Gemini models
+  - API Key: Configure in `config["api_keys"]["google"]` or set `GOOGLE_API_KEY`
+- **OpenRouter**: Aggregator service
+  - API Key: Configure in `config["api_keys"]["openrouter"]` or set `OPENAI_API_KEY`
+- **Ollama**: Local models (no API key required)
+
+### CLI Integration
+The CLI interface shows visual indicators for API key status:
+- 🔑 = API key configured and ready to use
+- 🔒 = No API key configured (provider will be displayed in dim text)

@@ -20,8 +20,8 @@ from rich import box
 from rich.align import Align
 from rich.rule import Rule
 
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config_manager import get_config
+from tradingagents.utils.dependency_checker import DependencyChecker
 from cli.models import AnalystType
 from cli.utils import *
 
@@ -736,7 +736,8 @@ def run_analysis():
     selections = get_user_selections()
 
     # Create config with selected research depth
-    config = DEFAULT_CONFIG.copy()
+    from tradingagents.config_manager import get_default_config_dict
+    config = get_default_config_dict()
     config["max_debate_rounds"] = selections["research_depth"]
     config["max_risk_discuss_rounds"] = selections["research_depth"]
     config["quick_think_llm"] = selections["shallow_thinker"]
@@ -744,10 +745,16 @@ def run_analysis():
     config["backend_url"] = selections["backend_url"]
     config["llm_provider"] = selections["llm_provider"].lower()
 
-    # Initialize the graph
-    graph = TradingAgentsGraph(
-        [analyst.value for analyst in selections["analysts"]], config=config, debug=True
-    )
+    # Initialize the graph (delayed import to avoid packaging issues)
+    try:
+        from tradingagents.graph.trading_graph import TradingAgentsGraph
+        graph = TradingAgentsGraph(
+            [analyst.value for analyst in selections["analysts"]], config=config, debug=True
+        )
+    except ImportError as e:
+        console.print(f"\n[red]❌ Failed to import TradingAgentsGraph: {e}[/red]")
+        console.print("[yellow]This may be due to dependency issues. Please check your environment.[/yellow]")
+        return
 
     # Create result directory
     results_dir = Path(config["results_dir"]) / selections["ticker"] / selections["analysis_date"]
@@ -1101,5 +1108,31 @@ def analyze():
     run_analysis()
 
 
+def check_dependencies():
+    """Check dependencies before starting the CLI."""
+    try:
+        # Quick check of critical packages
+        critical_packages = ['packaging', 'certifi', 'requests', 'langchain']
+        missing_packages = []
+        
+        for package in critical_packages:
+            try:
+                __import__(package)
+            except ImportError:
+                missing_packages.append(package)
+        
+        if missing_packages:
+            console.print(f"\n[red]❌ Missing critical dependencies: {', '.join(missing_packages)}[/red]")
+            console.print("[yellow]Running full dependency check...[/yellow]")
+            DependencyChecker.print_dependency_report()
+            return False
+        
+        return True
+    except Exception as e:
+        console.print(f"[red]❌ Dependency check failed: {e}[/red]")
+        return False
+
+
 if __name__ == "__main__":
-    app()
+    if check_dependencies():
+        app()

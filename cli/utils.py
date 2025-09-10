@@ -1,7 +1,39 @@
 import questionary
 from typing import List, Optional, Tuple, Dict
+from rich.console import Console
 
 from cli.models import AnalystType
+from tradingagents.config_manager import get_config
+
+console = Console()
+
+
+def _get_fallback_shallow_models() -> Dict[str, List[Tuple[str, str]]]:
+    """Get fallback shallow thinking models for each provider."""
+    return {
+        "openai": [("Quick Think: gpt-4o-mini", "gpt-4o-mini")],
+        "anthropic": [("Quick Think: claude-3-5-haiku-latest", "claude-3-5-haiku-latest")],
+        "google": [("Quick Think: gemini-2.0-flash-lite", "gemini-2.0-flash-lite")],
+        "openrouter": [("Quick Think: meta-llama/llama-3.3-8b-instruct:free", "meta-llama/llama-3.3-8b-instruct:free")],
+        "kimi (moonshot)": [("Quick Think: moonshot-v1-8k", "moonshot-v1-8k")],
+        "zhipu ai": [("Quick Think: glm-4-flash", "glm-4-flash")],
+        "deepseek": [("Quick Think: deepseek-chat", "deepseek-chat")],
+        "ollama": [("Quick Think: llama3.1", "llama3.1")],
+    }
+
+
+def _get_fallback_deep_models() -> Dict[str, List[Tuple[str, str]]]:
+    """Get fallback deep thinking models for each provider."""
+    return {
+        "openai": [("Deep Think: o4-mini", "o4-mini")],
+        "anthropic": [("Deep Think: claude-3-5-sonnet-latest", "claude-3-5-sonnet-latest")],
+        "google": [("Deep Think: gemini-2.5-pro-preview-06-05", "gemini-2.5-pro-preview-06-05")],
+        "openrouter": [("Deep Think: deepseek/deepseek-chat-v3-0324:free", "deepseek/deepseek-chat-v3-0324:free")],
+        "kimi (moonshot)": [("Deep Think: moonshot-v1-32k", "moonshot-v1-32k")],
+        "zhipu ai": [("Deep Think: glm-4-plus", "glm-4-plus")],
+        "deepseek": [("Deep Think: deepseek-coder", "deepseek-coder")],
+        "ollama": [("Deep Think: llama3.1", "llama3.1")],
+    }
 
 ANALYST_ORDER = [
     ("Market Analyst", AnalystType.MARKET),
@@ -124,42 +156,36 @@ def select_research_depth() -> int:
 
 def select_shallow_thinking_agent(provider) -> str:
     """Select shallow thinking llm engine using an interactive selection."""
-
-    # Define shallow thinking llm engine options with their corresponding model names
-    SHALLOW_AGENT_OPTIONS = {
-        "openai": [
-            ("GPT-4o-mini - Fast and efficient for quick tasks", "gpt-4o-mini"),
-            ("GPT-4.1-nano - Ultra-lightweight model for basic operations", "gpt-4.1-nano"),
-            ("GPT-4.1-mini - Compact model with good performance", "gpt-4.1-mini"),
-            ("GPT-4o - Standard model with solid capabilities", "gpt-4o"),
-        ],
-        "anthropic": [
-            ("Claude Haiku 3.5 - Fast inference and standard capabilities", "claude-3-5-haiku-latest"),
-            ("Claude Sonnet 3.5 - Highly capable standard model", "claude-3-5-sonnet-latest"),
-            ("Claude Sonnet 3.7 - Exceptional hybrid reasoning and agentic capabilities", "claude-3-7-sonnet-latest"),
-            ("Claude Sonnet 4 - High performance and excellent reasoning", "claude-sonnet-4-0"),
-        ],
-        "google": [
-            ("Gemini 2.0 Flash-Lite - Cost efficiency and low latency", "gemini-2.0-flash-lite"),
-            ("Gemini 2.0 Flash - Next generation features, speed, and thinking", "gemini-2.0-flash"),
-            ("Gemini 2.5 Flash - Adaptive thinking, cost efficiency", "gemini-2.5-flash-preview-05-20"),
-        ],
-        "openrouter": [
-            ("Meta: Llama 4 Scout", "meta-llama/llama-4-scout:free"),
-            ("Meta: Llama 3.3 8B Instruct - A lightweight and ultra-fast variant of Llama 3.3 70B", "meta-llama/llama-3.3-8b-instruct:free"),
-            ("google/gemini-2.0-flash-exp:free - Gemini Flash 2.0 offers a significantly faster time to first token", "google/gemini-2.0-flash-exp:free"),
-        ],
-        "ollama": [
-            ("llama3.1 local", "llama3.1"),
-            ("llama3.2 local", "llama3.2"),
-        ]
-    }
+    config_manager = get_config()
+    
+    # Get available models from config
+    provider_config = config_manager.get_provider_config(provider.lower())
+    available_models = provider_config.get("models", {})
+    
+    # If no models configured, use fallback options
+    if not available_models:
+        SHALLOW_AGENT_OPTIONS = _get_fallback_shallow_models()
+        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [])
+    else:
+        # Create options from configured models
+        quick_think_model = available_models.get("quick_think", "")
+        model_options = [(f"Quick Think Model: {quick_think_model}", quick_think_model)]
+        
+        # Add other available models
+        for model_type, model_name in available_models.items():
+            if model_type != "quick_think" and model_name:
+                model_options.append((f"Alternative: {model_name}", model_name))
+    
+    # If still no options, use fallback
+    if not model_options:
+        SHALLOW_AGENT_OPTIONS = _get_fallback_shallow_models()
+        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [("Default Model", "gpt-4o-mini")])
 
     choice = questionary.select(
         "Select Your [Quick-Thinking LLM Engine]:",
         choices=[
             questionary.Choice(display, value=value)
-            for display, value in SHALLOW_AGENT_OPTIONS[provider.lower()]
+            for display, value in model_options
         ],
         instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
         style=questionary.Style(
@@ -177,51 +203,45 @@ def select_shallow_thinking_agent(provider) -> str:
         )
         exit(1)
 
+    # Save the selected model configuration
+    config_manager.set_model_config(provider.lower(), "quick_think", choice)
+    config_manager.save_config()
+
     return choice
 
 
 def select_deep_thinking_agent(provider) -> str:
     """Select deep thinking llm engine using an interactive selection."""
-
-    # Define deep thinking llm engine options with their corresponding model names
-    DEEP_AGENT_OPTIONS = {
-        "openai": [
-            ("GPT-4.1-nano - Ultra-lightweight model for basic operations", "gpt-4.1-nano"),
-            ("GPT-4.1-mini - Compact model with good performance", "gpt-4.1-mini"),
-            ("GPT-4o - Standard model with solid capabilities", "gpt-4o"),
-            ("o4-mini - Specialized reasoning model (compact)", "o4-mini"),
-            ("o3-mini - Advanced reasoning model (lightweight)", "o3-mini"),
-            ("o3 - Full advanced reasoning model", "o3"),
-            ("o1 - Premier reasoning and problem-solving model", "o1"),
-        ],
-        "anthropic": [
-            ("Claude Haiku 3.5 - Fast inference and standard capabilities", "claude-3-5-haiku-latest"),
-            ("Claude Sonnet 3.5 - Highly capable standard model", "claude-3-5-sonnet-latest"),
-            ("Claude Sonnet 3.7 - Exceptional hybrid reasoning and agentic capabilities", "claude-3-7-sonnet-latest"),
-            ("Claude Sonnet 4 - High performance and excellent reasoning", "claude-sonnet-4-0"),
-            ("Claude Opus 4 - Most powerful Anthropic model", "	claude-opus-4-0"),
-        ],
-        "google": [
-            ("Gemini 2.0 Flash-Lite - Cost efficiency and low latency", "gemini-2.0-flash-lite"),
-            ("Gemini 2.0 Flash - Next generation features, speed, and thinking", "gemini-2.0-flash"),
-            ("Gemini 2.5 Flash - Adaptive thinking, cost efficiency", "gemini-2.5-flash-preview-05-20"),
-            ("Gemini 2.5 Pro", "gemini-2.5-pro-preview-06-05"),
-        ],
-        "openrouter": [
-            ("DeepSeek V3 - a 685B-parameter, mixture-of-experts model", "deepseek/deepseek-chat-v3-0324:free"),
-            ("Deepseek - latest iteration of the flagship chat model family from the DeepSeek team.", "deepseek/deepseek-chat-v3-0324:free"),
-        ],
-        "ollama": [
-            ("llama3.1 local", "llama3.1"),
-            ("qwen3", "qwen3"),
-        ]
-    }
+    config_manager = get_config()
+    
+    # Get available models from config
+    provider_config = config_manager.get_provider_config(provider.lower())
+    available_models = provider_config.get("models", {})
+    
+    # If no models configured, use fallback options
+    if not available_models:
+        DEEP_AGENT_OPTIONS = _get_fallback_deep_models()
+        model_options = DEEP_AGENT_OPTIONS.get(provider.lower(), [])
+    else:
+        # Create options from configured models
+        deep_think_model = available_models.get("deep_think", "")
+        model_options = [(f"Deep Think Model: {deep_think_model}", deep_think_model)]
+        
+        # Add other available models
+        for model_type, model_name in available_models.items():
+            if model_type != "deep_think" and model_name:
+                model_options.append((f"Alternative: {model_name}", model_name))
+    
+    # If still no options, use fallback
+    if not model_options:
+        DEEP_AGENT_OPTIONS = _get_fallback_deep_models()
+        model_options = DEEP_AGENT_OPTIONS.get(provider.lower(), [("Default Model", "gpt-4o")])
     
     choice = questionary.select(
         "Select Your [Deep-Thinking LLM Engine]:",
         choices=[
             questionary.Choice(display, value=value)
-            for display, value in DEEP_AGENT_OPTIONS[provider.lower()]
+            for display, value in model_options
         ],
         instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
         style=questionary.Style(
@@ -237,26 +257,39 @@ def select_deep_thinking_agent(provider) -> str:
         console.print("\n[red]No deep thinking llm engine selected. Exiting...[/red]")
         exit(1)
 
+    # Save the selected model configuration
+    config_manager.set_model_config(provider.lower(), "deep_think", choice)
+    config_manager.save_config()
+
     return choice
 
 def select_llm_provider() -> tuple[str, str]:
-    """Select the OpenAI api url using interactive selection."""
-    # Define OpenAI api options with their corresponding endpoints
-    BASE_URLS = [
-        ("OpenAI", "https://api.openai.com/v1"),
-        ("Anthropic", "https://api.anthropic.com/"),
-        ("Google", "https://generativelanguage.googleapis.com/v1"),
-        ("Openrouter", "https://openrouter.ai/api/v1"),
-        ("Ollama", "http://localhost:11434/v1"),        
-    ]
+    """Select the LLM provider using interactive selection."""
+    config_manager = get_config()
+    providers = config_manager.get_available_providers()
+    
+    # Check API key availability and create choices with indicators
+    choices = []
+    
+    for provider_name, provider_config in providers.items():
+        display_name = provider_name.title()
+        url = provider_config.get("base_url", "")
+        has_api_key = bool(provider_config.get("api_key", ""))
+        
+        # Add visual indicator for API key status
+        if has_api_key:
+            indicator = "🔑"  # Has API key
+            choice_text = f"{display_name} {indicator}"
+        else:
+            indicator = "🔒"  # No API key configured
+            choice_text = f"[dim]{display_name} {indicator}[/dim]"
+        
+        choices.append(questionary.Choice(choice_text, value=(provider_name, url)))
     
     choice = questionary.select(
         "Select your LLM Provider:",
-        choices=[
-            questionary.Choice(display, value=(display, value))
-            for display, value in BASE_URLS
-        ],
-        instruction="\n- Use arrow keys to navigate\n- Press Enter to select",
+        choices=choices,
+        instruction="\n- 🔑 = API key configured  🔒 = No API key configured\n- Use arrow keys to navigate\n- Press Enter to select",
         style=questionary.Style(
             [
                 ("selected", "fg:magenta noinherit"),
@@ -267,10 +300,14 @@ def select_llm_provider() -> tuple[str, str]:
     ).ask()
     
     if choice is None:
-        console.print("\n[red]no OpenAI backend selected. Exiting...[/red]")
+        console.print("\n[red]no LLM provider selected. Exiting...[/red]")
         exit(1)
     
     display_name, url = choice
     print(f"You selected: {display_name}\tURL: {url}")
+    
+    # Set as active provider
+    config_manager.set_active_provider(display_name)
+    config_manager.save_config()
     
     return display_name, url

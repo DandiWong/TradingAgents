@@ -158,9 +158,13 @@ To use TradingAgents inside your code, you can import the `tradingagents` module
 
 ```python
 from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config_manager import get_config
 
-ta = TradingAgentsGraph(debug=True, config=DEFAULT_CONFIG.copy())
+# Get configuration from JSON file
+config_manager = get_config()
+config = config_manager.get_config()
+
+ta = TradingAgentsGraph(debug=True, config=config)
 
 # forward propagate
 _, decision = ta.propagate("NVDA", "2024-05-10")
@@ -171,10 +175,13 @@ You can also adjust the default configuration to set your own choice of LLMs, de
 
 ```python
 from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config_manager import get_config
+
+# Get configuration from JSON file
+config_manager = get_config()
+config = config_manager.get_config()
 
 # Create a custom config
-config = DEFAULT_CONFIG.copy()
 config["deep_think_llm"] = "gpt-4.1-nano"  # Use a different model
 config["quick_think_llm"] = "gpt-4.1-nano"  # Use a different model
 config["max_debate_rounds"] = 1  # Increase debate rounds
@@ -190,7 +197,61 @@ print(decision)
 
 > For `online_tools`, we recommend enabling them for experimentation, as they provide access to real-time data. The agents' offline tools rely on cached data from our **Tauric TradingDB**, a curated dataset we use for backtesting. We're currently in the process of refining this dataset, and we plan to release it soon alongside our upcoming projects. Stay tuned!
 
-You can view the full list of configurations in `tradingagents/default_config.py`.
+## Configuration
+
+TradingAgents now uses a JSON-based configuration system for managing LLM providers, API keys, and project settings. The configuration is stored in `config.json` in the project root.
+
+### Configuration Structure
+
+The configuration file contains the following sections:
+
+- **project_settings**: Project directories and paths
+- **llm_providers**: Available LLM providers with their models and API keys
+- **active_provider**: Currently selected LLM provider
+- **debate_settings**: Agent debate and discussion parameters
+- **tool_settings**: Tool usage preferences
+
+### Supported LLM Providers
+
+- **OpenAI**: GPT-4o-mini, O4-mini
+- **Anthropic**: Claude-3.5-haiku, Claude-3.5-sonnet
+- **Google**: Gemini-2.0-flash-lite, Gemini-2.5-pro
+- **OpenRouter**: Meta Llama, DeepSeek models
+- **Kimi (Moonshot)**: Moonshot-v1 models
+- **Zhipu AI**: GLM-4 series models
+- **DeepSeek**: DeepSeek Chat and Coder models
+- **Ollama**: Local models
+
+### API Key Configuration
+
+Add your API keys directly in the `config.json` file:
+
+```json
+{
+  "llm_providers": {
+    "openai": {
+      "api_key": "your-openai-api-key-here"
+    },
+    "anthropic": {
+      "api_key": "your-anthropic-api-key-here"
+    }
+  }
+}
+```
+
+### CLI Configuration
+
+Use the CLI to configure providers and models:
+
+```bash
+# Launch the interactive CLI
+python -m cli.main
+
+# The CLI will show available providers with visual indicators:
+# 🔑 = API key configured  🔒 = No API key configured
+```
+
+You can view the full list of configuration options in `config.json`.
 
 ## Contributing
 

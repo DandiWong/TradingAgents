@@ -1,17 +1,17 @@
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config_manager import get_default_config_dict
 
-# Create a custom config
-config = DEFAULT_CONFIG.copy()
-config["llm_provider"] = "google"  # Use a different model
-config["backend_url"] = "https://generativelanguage.googleapis.com/v1"  # Use a different backend
-config["deep_think_llm"] = "gemini-2.5-flash"  # Use a different model
-config["quick_think_llm"] = "gemini-2.5-flash"  # Use a different model
-config["max_debate_rounds"] = 1  # Increase debate rounds
-config["online_tools"] = True  # Increase debate rounds
+# Get configuration
+config = get_default_config_dict()
+config["llm_provider"] = "google"
 
-# Initialize with custom config
-ta = TradingAgentsGraph(debug=True, config=config)
+# Initialize with custom config (with error handling)
+try:
+    from tradingagents.graph.trading_graph import TradingAgentsGraph
+    ta = TradingAgentsGraph(debug=True, config=config)
+except ImportError as e:
+    print(f"❌ Failed to import TradingAgentsGraph: {e}")
+    print("This may be due to dependency issues. Please check your environment.")
+    exit(1)
 
 # forward propagate
 _, decision = ta.propagate("NVDA", "2024-05-10")

@@ -11,7 +11,7 @@ import os
 from dateutil.relativedelta import relativedelta
 from langchain_openai import ChatOpenAI
 import tradingagents.dataflows.interface as interface
-from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config_manager import get_config
 from langchain_core.messages import HumanMessage
 
 
@@ -32,7 +32,7 @@ def create_msg_delete():
 
 
 class Toolkit:
-    _config = DEFAULT_CONFIG.copy()
+    _config = get_config().get_config()
 
     @classmethod
     def update_config(cls, config):
