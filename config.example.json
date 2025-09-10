@@ -6,6 +6,15 @@
     "data_cache_dir": "./tradingagents/dataflows/data_cache"
   },
   "llm_providers": {
+    "openrouter": {
+      "models": {
+        "quick_think": "z-ai/glm-4.5-air:free",
+        "deep_think": "deepseek/deepseek-chat-v3.1:free"
+      },
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key": "your-openrouter-api-key-here",
+      "description": "Aggregator service with multiple model providers"
+    },
     "openai": {
       "models": {
         "quick_think": "gpt-5",
@@ -33,16 +42,7 @@
       "api_key": "your-google-api-key-here",
       "description": "Google Gemini models"
     },
-    "openrouter": {
-      "models": {
-        "quick_think": "z-ai/glm-4.5-air:free",
-        "deep_think": "deepseek/deepseek-chat-v3.1:free"
-      },
-      "base_url": "https://openrouter.ai/api/v1",
-      "api_key": "your-openrouter-api-key-here",
-      "description": "Aggregator service with multiple model providers"
-    },
-    "kimi (moonshot)": {
+    "kimi": {
       "models": {
         "quick_think": "kimi-k2-0905-preview",
         "deep_think": "kimi-k2-0905-preview"
@@ -51,7 +51,7 @@
       "api_key": "your-moonshot-api-key-here",
       "description": "Chinese AI models with strong multilingual capabilities"
     },
-    "zhipu ai": {
+    "zhipu": {
       "models": {
         "quick_think": "glm-4.5-air",
         "deep_think": "glm-4.5"
@@ -79,7 +79,7 @@
       "description": "Local models (no API key required)"
     }
   },
-  "active_provider": "openai",
+  "active_provider": "openrouter",
   "debate_settings": {
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
