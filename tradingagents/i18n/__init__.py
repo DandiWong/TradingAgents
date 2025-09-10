@@ -199,3 +199,15 @@ def get_locale() -> str:
 def get_available_locales() -> list:
     """获取可用的语言列表"""
     return get_i18n_manager().get_available_locales()
+
+
+def init_locale_from_config():
+    """从配置文件初始化语言设置"""
+    try:
+        from ..config_manager import ConfigManager
+        config_manager = ConfigManager()
+        current_locale = config_manager.get_locale()
+        set_locale(current_locale)
+        return True
+    except Exception:
+        return False

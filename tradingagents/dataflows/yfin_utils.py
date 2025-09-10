@@ -67,7 +67,17 @@ class YFinanceUtils:
         company_info_df = DataFrame([company_info])
         if save_path:
             company_info_df.to_csv(save_path)
-            print(f"Company info for {ticker.ticker} saved to {save_path}")
+            # Initialize i18n if available
+            try:
+                from ..config_manager import ConfigManager
+                config_manager = ConfigManager()
+                current_locale = config_manager.get_locale()
+                from ..i18n import set_locale, _
+                set_locale(current_locale)
+            except:
+                def _(key: str, **kwargs) -> str:
+                    return key.format(**kwargs) if kwargs else key
+            print(_("dataflow.company_info_saved", ticker=ticker.ticker, path=save_path))
         return company_info_df
 
     def get_stock_dividends(
@@ -79,7 +89,7 @@ class YFinanceUtils:
         dividends = ticker.dividends
         if save_path:
             dividends.to_csv(save_path)
-            print(f"Dividends for {ticker.ticker} saved to {save_path}")
+            print(_("dataflow.dividends_saved", ticker=ticker.ticker, path=save_path))
         return dividends
 
     def get_income_stmt(symbol: Annotated[str, "ticker symbol"]) -> DataFrame:

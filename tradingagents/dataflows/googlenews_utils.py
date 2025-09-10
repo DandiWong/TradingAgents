@@ -88,7 +88,17 @@ def getNewsData(query, start_date, end_date):
                         }
                     )
                 except Exception as e:
-                    print(f"Error processing result: {e}")
+                    # Initialize i18n if available
+                    try:
+                        from ..config_manager import ConfigManager
+                        config_manager = ConfigManager()
+                        current_locale = config_manager.get_locale()
+                        from ..i18n import set_locale, _
+                        set_locale(current_locale)
+                    except:
+                        def _(key: str, **kwargs) -> str:
+                            return key.format(**kwargs) if kwargs else key
+                    print(_("dataflow.processing_error", error=e))
                     # If one of the fields is not found, skip this result
                     continue
 
@@ -102,7 +112,7 @@ def getNewsData(query, start_date, end_date):
             page += 1
 
         except Exception as e:
-            print(f"Failed after multiple retries: {e}")
+            print(_("dataflow.retry_failed", error=e))
             break
 
     return news_results

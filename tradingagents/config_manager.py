@@ -8,6 +8,14 @@ import os
 from typing import Dict, Any, Optional
 from pathlib import Path
 
+# Import i18n support
+try:
+    from .i18n import _
+except ImportError:
+    # Fallback if i18n is not available
+    def _(key: str, **kwargs) -> str:
+        return key.format(**kwargs) if kwargs else key
+
 
 class ConfigManager:
     """Manages configuration loading and access for TradingAgents."""
@@ -53,8 +61,15 @@ class ConfigManager:
                 self._config = self._get_default_config()
                 self.save_config()
         except (json.JSONDecodeError, IOError) as e:
-            print(f"Warning: Could not load config from {self.config_path}: {e}")
-            print("Using default configuration.")
+            # Initialize i18n if available
+            try:
+                current_locale = self.get_locale()
+                from .i18n import set_locale
+                set_locale(current_locale)
+            except:
+                pass
+            print(_("config.load_warning", path=self.config_path, error=e))
+            print(_("config.using_default"))
             self._config = self._get_default_config()
     
     def _get_default_config(self) -> Dict[str, Any]:
@@ -91,7 +106,8 @@ class ConfigManager:
                 "provider": "auto",
                 "fallback_to_mock": True,
                 "embedding_dim": 1536
-            }
+            },
+            "language": "zh-CN"
         }
     
     def save_config(self) -> None:
@@ -101,11 +117,20 @@ class ConfigManager:
             with open(self.config_path, 'w', encoding='utf-8') as f:
                 json.dump(self._config, f, indent=2, ensure_ascii=False)
         except IOError as e:
-            print(f"Warning: Could not save config to {self.config_path}: {e}")
+            print(_("config.save_warning", path=self.config_path, error=e))
     
     def get_config(self) -> Dict[str, Any]:
         """Get the complete configuration."""
         return self._config.copy()
+    
+    def get_locale(self) -> str:
+        """Get the current locale/language setting."""
+        return self._config.get("language", "en-US")
+    
+    def set_locale(self, locale: str) -> None:
+        """Set the current locale/language setting."""
+        self._config["language"] = locale
+        self.save_config()
     
     def get_active_provider(self) -> str:
         """Get the active LLM provider."""

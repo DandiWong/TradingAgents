@@ -258,5 +258,62 @@
   "reports": {
     "indicator_values_from_to": "values from {before} to {end_date}",
     "no_description_available": "No description available"
+  },
+  "dependency": {
+    "check_running": "Running full dependency check...",
+    "health_check": {
+      "title": "TradingAgents Dependency Health Check",
+      "separator": "================================================================================",
+      "summary": "📊 Summary:",
+      "required": "Required: {ok}/{total} OK",
+      "optional": "Optional: {ok}/{total} OK",
+      "critical_issues": "❌ Critical Issues:",
+      "required_packages": "🔧 Required Packages:",
+      "optional_packages": "🔍 Optional Packages:",
+      "recommendations": "💡 Recommendations:",
+      "status_fail": "🚨 Status: FAIL - Critical dependencies missing",
+      "status_fail_msg": "Please install missing dependencies before running TradingAgents.",
+      "status_ok": "✅ Status: OK - All critical dependencies are satisfied",
+      "fixing_issues": "🔧 Attempting to fix common dependency issues...",
+      "running_fix": "Running: {fix}",
+      "fix_success": "✅ Success",
+      "fix_failed": "❌ Failed: {error}",
+      "fix_error": "❌ Error: {error}"
+    }
+  },
+  "embedding": {
+    "disabled": "Embeddings disabled, using mock provider",
+    "no_api_key": "Warning: No API key for provider '{provider}', using mock provider",
+    "not_supported": "Warning: Embedding provider '{provider}' not supported, using mock provider",
+    "creation_error": "Error creating embedding provider '{provider}': {error}",
+    "fallback_mock": "Falling back to mock provider",
+    "get_error": "Error getting embedding: {error}",
+    "batch_error": "Error getting batch embeddings: {error}"
+  },
+  "config": {
+    "load_warning": "Warning: Could not load config from {path}: {error}",
+    "using_default": "Using default configuration.",
+    "save_warning": "Warning: Could not save config to {path}: {error}"
+  },
+  "memory": {
+    "match_header": "Match {index}:",
+    "similarity_score": "Similarity Score: {score:.2f}",
+    "matched_situation": "Matched Situation: {situation}",
+    "recommendation": "Recommendation: {recommendation}",
+    "error": "Error during recommendation: {error}"
+  },
+  "dataflow": {
+    "tag_saved": "{tag} saved to {path}",
+    "processing_error": "Error processing result: {error}",
+    "retry_failed": "Failed after multiple retries: {error}",
+    "no_balance_sheet": "No balance sheet available before the given current date.",
+    "no_cash_flow": "No cash flow statement available before the given current date.",
+    "no_income_statement": "No income statement available before the given current date.",
+    "company_info_saved": "Company info for {ticker} saved to {path}",
+    "dividends_saved": "Dividends for {ticker} saved to {path}"
+  },
+  "main": {
+    "import_error": "❌ Failed to import TradingAgentsGraph: {error}",
+    "dependency_issues": "This may be due to dependency issues. Please check your environment."
   }
 }

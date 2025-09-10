@@ -7,6 +7,15 @@ import sys
 import importlib
 from typing import List, Dict, Tuple, Optional
 
+# Import i18n support
+try:
+    from ..i18n import _
+    from ..config_manager import ConfigManager
+except ImportError:
+    # Fallback if i18n is not available
+    def _(key: str, **kwargs) -> str:
+        return key.format(**kwargs) if kwargs else key
+
 
 class DependencyChecker:
     """Checks and validates required dependencies for TradingAgents."""
@@ -181,8 +190,17 @@ class DependencyChecker:
     @classmethod
     def print_dependency_report(cls) -> None:
         """Print a comprehensive dependency report."""
+        # Initialize i18n if available
+        try:
+            config_manager = ConfigManager()
+            current_locale = config_manager.get_locale()
+            from ..i18n import set_locale
+            set_locale(current_locale)
+        except:
+            pass
+            
         print("=" * 80)
-        print("TradingAgents Dependency Health Check")
+        print(_("dependency.health_check.title"))
         print("=" * 80)
         
         results = cls.check_all_dependencies()
@@ -193,25 +211,25 @@ class DependencyChecker:
         optional_ok = sum(1 for pkg in results['optional'].values() if pkg['status'] == 'ok')
         optional_total = len(results['optional'])
         
-        print(f"\n📊 Summary:")
-        print(f"   Required: {required_ok}/{required_total} OK")
-        print(f"   Optional: {optional_ok}/{optional_total} OK")
+        print(f"\n{_("dependency.health_check.summary")}")
+        print(f"   {_("dependency.health_check.required", ok=required_ok, total=required_total)}")
+        print(f"   {_("dependency.health_check.optional", ok=optional_ok, total=optional_total)}")
         
         # Issues
         if results['issues']:
-            print(f"\n❌ Critical Issues:")
+            print(f"\n{_("dependency.health_check.critical_issues")}")
             for issue in results['issues']:
                 print(f"   • {issue}")
         
         # Required packages
-        print(f"\n🔧 Required Packages:")
+        print(f"\n{_("dependency.health_check.required_packages")}")
         for package, info in results['required'].items():
             status_icon = "✅" if info['status'] == 'ok' else "❌"
             print(f"   {status_icon} {package}: {info['message']}")
             print(f"      {info['description']}")
         
         # Optional packages
-        print(f"\n🔍 Optional Packages:")
+        print(f"\n{_("dependency.health_check.optional_packages")}")
         for package, info in results['optional'].items():
             status_icon = "✅" if info['status'] == 'ok' else "⚠️"
             print(f"   {status_icon} {package}: {info['message']}")
@@ -219,22 +237,31 @@ class DependencyChecker:
         
         # Recommendations
         if results['recommendations']:
-            print(f"\n💡 Recommendations:")
+            print(f"\n{_("dependency.health_check.recommendations")}")
             for rec in results['recommendations']:
                 print(f"   • {rec}")
         
         # Overall status
         if results['issues']:
-            print(f"\n🚨 Status: FAIL - Critical dependencies missing")
-            print("   Please install missing dependencies before running TradingAgents.")
+            print(f"\n{_("dependency.health_check.status_fail")}")
+            print(f"   {_("dependency.health_check.status_fail_msg")}")
             sys.exit(1)
         else:
-            print(f"\n✅ Status: OK - All critical dependencies are satisfied")
+            print(f"\n{_("dependency.health_check.status_ok")}")
     
     @classmethod
     def fix_common_issues(cls) -> None:
         """Attempt to fix common dependency issues."""
-        print("🔧 Attempting to fix common dependency issues...")
+        # Initialize i18n if available
+        try:
+            config_manager = ConfigManager()
+            current_locale = config_manager.get_locale()
+            from ..i18n import set_locale
+            set_locale(current_locale)
+        except:
+            pass
+            
+        print(_("dependency.health_check.fixing_issues"))
         
         # Common fixes
         fixes = [
@@ -245,16 +272,16 @@ class DependencyChecker:
         ]
         
         for fix in fixes:
-            print(f"   Running: {fix}")
+            print(f"   {_("dependency.health_check.running_fix", fix=fix)}")
             try:
                 import subprocess
                 result = subprocess.run(fix.split(), capture_output=True, text=True)
                 if result.returncode == 0:
-                    print("   ✅ Success")
+                    print(f"   {_("dependency.health_check.fix_success")}")
                 else:
-                    print(f"   ❌ Failed: {result.stderr}")
+                    print(f"   {_("dependency.health_check.fix_failed", error=result.stderr)}")
             except Exception as e:
-                print(f"   ❌ Error: {e}")
+                print(f"   {_("dependency.health_check.fix_error", error=e)}")
 
 
 if __name__ == "__main__":

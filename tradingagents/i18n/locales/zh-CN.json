@@ -335,6 +335,60 @@
     "no_description_available": "无可用描述"
   },
   "dependency": {
-    "check_running": "正在运行完整依赖检查..."
+    "check_running": "正在运行完整依赖检查...",
+    "health_check": {
+      "title": "TradingAgents 依赖健康检查",
+      "separator": "================================================================================",
+      "summary": "📊 摘要：",
+      "required": "必需：{ok}/{total} 正常",
+      "optional": "可选：{ok}/{total} 正常",
+      "critical_issues": "❌ 关键问题：",
+      "required_packages": "🔧 必需包：",
+      "optional_packages": "🔍 可选包：",
+      "recommendations": "💡 建议：",
+      "status_fail": "🚨 状态：失败 - 缺少关键依赖",
+      "status_fail_msg": "请在运行TradingAgents之前安装缺少的依赖。",
+      "status_ok": "✅ 状态：正常 - 所有关键依赖都已满足",
+      "fixing_issues": "🔧 正在尝试修复常见依赖问题...",
+      "running_fix": "正在运行：{fix}",
+      "fix_success": "✅ 成功",
+      "fix_failed": "❌ 失败：{error}",
+      "fix_error": "❌ 错误：{error}"
+    }
+  },
+  "embedding": {
+    "disabled": "嵌入功能已禁用，使用模拟提供商",
+    "no_api_key": "警告：提供商'{provider}'没有API密钥，使用模拟提供商",
+    "not_supported": "警告：不支持嵌入提供商'{provider}'，使用模拟提供商",
+    "creation_error": "创建嵌入提供商'{provider}'时出错：{error}",
+    "fallback_mock": "回退到模拟提供商",
+    "get_error": "获取嵌入时出错：{error}",
+    "batch_error": "获取批量嵌入时出错：{error}"
+  },
+  "config": {
+    "load_warning": "警告：无法从{path}加载配置：{error}",
+    "using_default": "使用默认配置。",
+    "save_warning": "警告：无法保存配置到{path}：{error}"
+  },
+  "memory": {
+    "match_header": "匹配 {index}：",
+    "similarity_score": "相似度分数：{score:.2f}",
+    "matched_situation": "匹配情况：{situation}",
+    "recommendation": "建议：{recommendation}",
+    "error": "推荐过程中出错：{error}"
+  },
+  "dataflow": {
+    "tag_saved": "{tag} 已保存到 {path}",
+    "processing_error": "处理结果时出错：{error}",
+    "retry_failed": "多次重试后失败：{error}",
+    "no_balance_sheet": "在给定当前日期之前没有可用的资产负债表。",
+    "no_cash_flow": "在给定当前日期之前没有可用的现金流量表。",
+    "no_income_statement": "在给定当前日期之前没有可用的损益表。",
+    "company_info_saved": "{ticker}的公司信息已保存到{path}",
+    "dividends_saved": "{ticker}的股息已保存到{path}"
+  },
+  "main": {
+    "import_error": "❌ 导入TradingAgentsGraph失败：{error}",
+    "dependency_issues": "这可能是由于依赖问题。请检查您的环境。"
   }
 }

@@ -9,8 +9,18 @@ try:
     from tradingagents.graph.trading_graph import TradingAgentsGraph
     ta = TradingAgentsGraph(debug=True, config=config)
 except ImportError as e:
-    print(f"❌ Failed to import TradingAgentsGraph: {e}")
-    print("This may be due to dependency issues. Please check your environment.")
+    # Initialize i18n if available
+    try:
+        from tradingagents.config_manager import ConfigManager
+        config_manager = ConfigManager()
+        current_locale = config_manager.get_locale()
+        from tradingagents.i18n import set_locale, _
+        set_locale(current_locale)
+    except:
+        def _(key: str, **kwargs) -> str:
+            return key.format(**kwargs) if kwargs else key
+    print(_("main.import_error", error=e))
+    print(_("main.dependency_issues"))
     exit(1)
 
 # forward propagate

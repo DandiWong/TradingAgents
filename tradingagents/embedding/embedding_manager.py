@@ -8,6 +8,15 @@ from typing import List, Union, Optional, Dict, Any
 from abc import ABC, abstractmethod
 import numpy as np
 
+# Import i18n support
+try:
+    from ..i18n import _
+    from ..config_manager import ConfigManager
+except ImportError:
+    # Fallback if i18n is not available
+    def _(key: str, **kwargs) -> str:
+        return key.format(**kwargs) if kwargs else key
+
 
 class EmbeddingProvider(ABC):
     """Abstract base class for embedding providers."""
@@ -135,7 +144,15 @@ class EmbeddingManager:
         # Check if embeddings are enabled
         embedding_settings = self.config.get("embedding_settings", {})
         if not embedding_settings.get("enabled", True):
-            print("Embeddings disabled, using mock provider")
+            # Initialize i18n if available
+            try:
+                config_manager = ConfigManager()
+                current_locale = config_manager.get_locale()
+                from ..i18n import set_locale
+                set_locale(current_locale)
+            except:
+                pass
+            print(_("embedding.disabled"))
             return MockEmbeddingProvider()
         
         # Get provider name
@@ -147,7 +164,7 @@ class EmbeddingManager:
         
         # Check if API key is available
         if not api_key or api_key.strip() in ["", "your-api-key-here"]:
-            print(f"Warning: No API key for provider '{provider_name}', using mock provider")
+            print(_("embedding.no_api_key", provider=provider_name))
             return MockEmbeddingProvider()
         
         # Create appropriate provider
@@ -164,13 +181,13 @@ class EmbeddingManager:
                 
             else:
                 # Fallback to mock provider for unsupported providers
-                print(f"Warning: Embedding provider '{provider_name}' not supported, using mock provider")
+                print(_("embedding.not_supported", provider=provider_name))
                 return MockEmbeddingProvider()
                 
         except Exception as e:
-            print(f"Error creating embedding provider '{provider_name}': {e}")
+            print(_("embedding.creation_error", provider=provider_name, error=e))
             if embedding_settings.get("fallback_to_mock", True):
-                print("Falling back to mock provider")
+                print(_("embedding.fallback_mock"))
                 return MockEmbeddingProvider()
             else:
                 raise
@@ -180,7 +197,7 @@ class EmbeddingManager:
         try:
             return self.provider.get_embedding(text)
         except Exception as e:
-            print(f"Error getting embedding: {e}")
+            print(_("embedding.get_error", error=e))
             # Fallback to mock embedding
             mock_provider = MockEmbeddingProvider()
             return mock_provider.get_embedding(text)
@@ -190,7 +207,7 @@ class EmbeddingManager:
         try:
             return self.provider.get_batch_embeddings(texts)
         except Exception as e:
-            print(f"Error getting batch embeddings: {e}")
+            print(_("embedding.batch_error", error=e))
             # Fallback to mock embeddings
             mock_provider = MockEmbeddingProvider()
             return mock_provider.get_batch_embeddings(texts)

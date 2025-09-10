@@ -2,6 +2,15 @@ import chromadb
 from chromadb.config import Settings
 from tradingagents.embedding import EmbeddingManager
 
+# Import i18n support
+try:
+    from ...i18n import _
+    from ...config_manager import ConfigManager
+except ImportError:
+    # Fallback if i18n is not available
+    def _(key: str, **kwargs) -> str:
+        return key.format(**kwargs) if kwargs else key
+
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
@@ -96,10 +105,18 @@ if __name__ == "__main__":
         recommendations = matcher.get_memories(current_situation, n_matches=2)
 
         for i, rec in enumerate(recommendations, 1):
-            print(f"\nMatch {i}:")
-            print(f"Similarity Score: {rec['similarity_score']:.2f}")
-            print(f"Matched Situation: {rec['matched_situation']}")
-            print(f"Recommendation: {rec['recommendation']}")
+            # Initialize i18n if available
+            try:
+                config_manager = ConfigManager()
+                current_locale = config_manager.get_locale()
+                from ...i18n import set_locale
+                set_locale(current_locale)
+            except:
+                pass
+            print(f"\n{_("memory.match_header", index=i)}")
+            print(_("memory.similarity_score", score=rec['similarity_score']))
+            print(_("memory.matched_situation", situation=rec['matched_situation']))
+            print(_("memory.recommendation", recommendation=rec['recommendation']))
 
     except Exception as e:
-        print(f"Error during recommendation: {str(e)}")
+        print(_("memory.error", error=str(e)))

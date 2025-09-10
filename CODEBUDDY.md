@@ -80,6 +80,7 @@ The framework uses `config.json` for:
 - **Model Configuration**: Separate "quick_think" and "deep_think" model assignments
 - **Debate Settings**: Configurable rounds for investment and risk discussions
 - **Tool Settings**: Online vs cached data toggle
+- **Language Settings**: Dynamic Chinese/English language switching via "language" field
 
 ### Agent Communication Flow
 
@@ -94,6 +95,44 @@ The framework uses `config.json` for:
 - **Results Directory**: `./results/{ticker}/{date}/` contains analysis reports and logs
 - **Message Logging**: Complete agent communication traces in `message_tool.log`
 - **Structured Reports**: Markdown files for each analysis phase
+
+## Internationalization (i18n) System
+
+TradingAgents features comprehensive dynamic language switching:
+
+### Core Features
+- **Configuration-Driven**: Language controlled via "language" field in config.json
+- **Dynamic Switching**: All agent prompts, error messages, UI text automatically switch
+- **Complete Coverage**: Includes agent system prompts, tool names, report headers, error messages
+- **Supported Languages**: Chinese (zh-CN), English (en-US)
+
+### Usage
+```json
+// config.json
+{
+  "language": "zh-CN"  // or "en-US"
+}
+```
+
+### Technical Implementation
+- **I18nManager**: Core internationalization manager in `tradingagents/i18n/`
+- **Translation Files**: JSON files in `tradingagents/i18n/locales/` directory
+- **Dynamic Loading**: Automatic language initialization based on configuration
+- **Agent Integration**: All agents support locale-aware dynamic prompts
+
+### Agent Language Switching
+All agents implement dynamic language awareness:
+```python
+# Agents automatically select language based on configuration
+current_locale = get_locale()
+if current_locale.startswith("zh"):
+    # Use Chinese prompts
+else:
+    # Use English prompts
+```
+
+### Example
+Run `python examples/i18n_demo.py` to see the language switching in action.
 
 ## Development Notes
 

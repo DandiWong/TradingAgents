@@ -173,7 +173,17 @@ def get_simfin_balance_sheet(
 
     # Check if there are any available reports; if not, return a notification
     if filtered_df.empty:
-        print("No balance sheet available before the given current date.")
+        # Initialize i18n if available
+        try:
+            from ..config_manager import ConfigManager
+            config_manager = ConfigManager()
+            current_locale = config_manager.get_locale()
+            from ..i18n import set_locale, _
+            set_locale(current_locale)
+        except:
+            def _(key: str, **kwargs) -> str:
+                return key.format(**kwargs) if kwargs else key
+        print(_("dataflow.no_balance_sheet"))
         return ""
 
     # Get the most recent balance sheet by selecting the row with the latest Publish Date
@@ -220,7 +230,7 @@ def get_simfin_cashflow(
 
     # Check if there are any available reports; if not, return a notification
     if filtered_df.empty:
-        print("No cash flow statement available before the given current date.")
+        print(_("dataflow.no_cash_flow"))
         return ""
 
     # Get the most recent cash flow statement by selecting the row with the latest Publish Date
@@ -267,7 +277,7 @@ def get_simfin_income_statements(
 
     # Check if there are any available reports; if not, return a notification
     if filtered_df.empty:
-        print("No income statement available before the given current date.")
+        print(_("dataflow.no_income_statement"))
         return ""
 
     # Get the most recent income statement by selecting the row with the latest Publish Date

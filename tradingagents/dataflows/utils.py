@@ -4,12 +4,29 @@ import pandas as pd
 from datetime import date, timedelta, datetime
 from typing import Annotated
 
+# Import i18n support
+try:
+    from ..i18n import _
+    from ..config_manager import ConfigManager
+except ImportError:
+    # Fallback if i18n is not available
+    def _(key: str, **kwargs) -> str:
+        return key.format(**kwargs) if kwargs else key
+
 SavePathType = Annotated[str, "File path to save data. If None, data is not saved."]
 
 def save_output(data: pd.DataFrame, tag: str, save_path: SavePathType = None) -> None:
     if save_path:
         data.to_csv(save_path)
-        print(f"{tag} saved to {save_path}")
+        # Initialize i18n if available
+        try:
+            config_manager = ConfigManager()
+            current_locale = config_manager.get_locale()
+            from ..i18n import set_locale
+            set_locale(current_locale)
+        except:
+            pass
+        print(_("dataflow.tag_saved", tag=tag, path=save_path))
 
 
 def get_current_date():
