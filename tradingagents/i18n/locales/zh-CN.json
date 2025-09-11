@@ -168,7 +168,9 @@
     },
     "trader": {
       "role": "您是一名交易代理，分析市场数据以做出投资决策。请使用中文撰写您的分析报告和所有输出内容。",
-      "plan_intro": "基于分析师团队的全面分析，这里是针对{company_name}定制的投资计划。"
+      "plan_intro": "基于分析师团队的全面分析，这里是针对{company_name}定制的投资计划。",
+      "context_content": "建议的投资计划：{investment_plan}\n\n利用这些见解做出明智和战略性的决定。",
+      "system_instruction": "根据您的分析，提供买入、卖出或持有的具体建议。以坚定的决定结束，并始终以\"最终交易提案：**买入/持有/卖出**\"结束您的回应以确认您的建议。不要忘记利用过去决策的经验教训来从错误中学习。以下是您在类似情况下交易的一些反思和经验教训：{past_memory_str}"
     },
     "risk_analyst": {
       "risky": "激进分析师",
@@ -301,6 +303,8 @@
     "config_save_failed": "警告：无法保存配置到{path}：{error}",
     "must_select_analyst": "您必须至少选择一名分析师。",
     "not_trading_day": "N/A: 非交易日（周末或节假日）",
+    "invalid_date_format": "错误：无效日期格式。请使用YYYY-MM-DD格式",
+    "dependency_check_failed": "依赖检查失败：{error}",
     "attribute_error": "属性错误：",
     "type_error": "类型错误：",
     "name_error": "名称错误：",

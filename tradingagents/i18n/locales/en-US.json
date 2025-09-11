@@ -152,7 +152,9 @@
     },
     "trader": {
       "role": "You are a trading agent analyzing market data to make investment decisions. Please write your analysis reports and all output content in English.",
-      "plan_intro": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}."
+      "plan_intro": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}.",
+      "context_content": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}. This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment. Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\nLeverage these insights to make an informed and strategic decision.",
+      "system_instruction": "Based on your analysis, provide a specific recommendation to buy, sell, or hold. End with a firm decision and always conclude your response with 'FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**' to confirm your recommendation. Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is some reflections from similar situations you traded in and the lessons learned: {past_memory_str}"
     },
     "risk_analyst": {
       "risky": "Aggressive Analyst",
@@ -246,7 +248,9 @@
     "using_default_config": "Using default configuration.",
     "config_save_failed": "Warning: Could not save config to {path}: {error}",
     "must_select_analyst": "You must select at least one analyst.",
-    "not_trading_day": "N/A: Not a trading day (weekend or holiday)"
+    "not_trading_day": "N/A: Not a trading day (weekend or holiday)",
+    "invalid_date_format": "Error: Invalid date format. Please use YYYY-MM-DD",
+    "dependency_check_failed": "Dependency check failed: {error}"
   },
   "system": {
     "analyzing": "Analyzing {ticker} on {date}...",

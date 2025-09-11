@@ -32,29 +32,33 @@ def create_trader(llm, memory):
         
         if current_locale.startswith("zh"):
             # 中文提示词
+            context_content = _("agents.trader.context_content", investment_plan=investment_plan)
+            system_instruction = _("agents.trader.system_instruction", past_memory_str=past_memory_str)
             context = {
                 "role": "user",
-                "content": f"{plan_intro}\n\n建议的投资计划：{investment_plan}\n\n利用这些见解做出明智和战略性的决定。",
+                "content": f"{plan_intro}\n\n{context_content}",
             }
 
             messages = [
                 {
                     "role": "system",
-                    "content": f"""{system_role} 根据您的分析，提供买入、卖出或持有的具体建议。以坚定的决定结束，并始终以"最终交易提案：**买入/持有/卖出**"结束您的回应以确认您的建议。不要忘记利用过去决策的经验教训来从错误中学习。以下是您在类似情况下交易的一些反思和经验教训：{past_memory_str}""",
+                    "content": f"{system_role} {system_instruction}",
                 },
                 context,
             ]
         else:
             # 英文提示词
+            context_content = _("agents.trader.context_content", company_name=company_name, investment_plan=investment_plan)
+            system_instruction = _("agents.trader.system_instruction", past_memory_str=past_memory_str)
             context = {
                 "role": "user",
-                "content": f"Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}. This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment. Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\nLeverage these insights to make an informed and strategic decision.",
+                "content": context_content,
             }
 
             messages = [
                 {
                     "role": "system",
-                    "content": f"""{system_role} Based on your analysis, provide a specific recommendation to buy, sell, or hold. End with a firm decision and always conclude your response with 'FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**' to confirm your recommendation. Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is some reflections from similar situations you traded in and the lessons learned: {past_memory_str}""",
+                    "content": f"{system_role} {system_instruction}",
                 },
                 context,
             ]

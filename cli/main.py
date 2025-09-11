@@ -814,7 +814,7 @@ def run_analysis():
         )
     except ImportError as e:
         console.print(f"\n[red]❌ {_('error.import_failed', module='TradingAgentsGraph', error=e)}[/red]")
-        console.print("[yellow]This may be due to dependency issues. Please check your environment.[/yellow]")
+        console.print(f"[yellow]{_('error.dependency_check')}[/yellow]")
         return
 
     # Create result directory
