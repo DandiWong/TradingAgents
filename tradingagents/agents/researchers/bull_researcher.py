@@ -1,7 +1,7 @@
 from langchain_core.messages import AIMessage
 import time
 import json
-from tradingagents.i18n import _
+from tradingagents.i18n import _, get_locale
 
 
 def create_bull_researcher(llm, memory):
@@ -24,7 +24,6 @@ def create_bull_researcher(llm, memory):
             past_memory_str += rec["recommendation"] + "\n\n"
 
         # 根据当前语言配置生成提示词
-        from tradingagents.i18n import get_locale
         current_locale = get_locale()
         
         system_role = _("agents.bull_researcher.role")

@@ -441,7 +441,7 @@ def update_display(layout, spinner_text=None):
     )
 
     stats_table = Table(show_header=False, box=None, padding=(0, 2), expand=True)
-    stats_table.add_column("Stats", justify="center")
+    stats_table.add_column(_("ui.stats.title"), justify="center")
     stats_table.add_row(
         _("ui.stats.format", 
           tool_calls=f"{_('ui.stats.tool_calls')}: {tool_calls_count}", 

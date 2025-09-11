@@ -26,8 +26,8 @@ def create_news_analyst(llm, toolkit):
             [
                 (
                     "system",
-                    _("agents.system.base_instruction") +
-                    " You have access to the following tools: {tool_names}.\n{system_message}" +
+                    _("agents.system.base_instruction") + " " +
+                    _("agents.system.tools_access", tool_names="{tool_names}") + "\n{system_message}\n" +
                     _("agents.system.reference_info_news", current_date=current_date)
                 ),
                 MessagesPlaceholder(variable_name="messages"),

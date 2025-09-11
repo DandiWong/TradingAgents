@@ -193,9 +193,9 @@ def get_simfin_balance_sheet(
     latest_balance_sheet = latest_balance_sheet.drop("SimFinId")
 
     return (
-        f"## {freq} balance sheet for {ticker} released on {str(latest_balance_sheet['Publish Date'])[0:10]}: \n"
+        f"## {_('dataflow_reports.balance_sheet_released', freq=freq, ticker=ticker, date=str(latest_balance_sheet['Publish Date'])[0:10])} \n"
         + str(latest_balance_sheet)
-        + "\n\nThis includes metadata like reporting dates and currency, share details, and a breakdown of assets, liabilities, and equity. Assets are grouped as current (liquid items like cash and receivables) and noncurrent (long-term investments and property). Liabilities are split between short-term obligations and long-term debts, while equity reflects shareholder funds such as paid-in capital and retained earnings. Together, these components ensure that total assets equal the sum of liabilities and equity."
+        + "\n\n" + _("dataflow_reports.balance_sheet_description")
     )
 
 
@@ -240,9 +240,9 @@ def get_simfin_cashflow(
     latest_cash_flow = latest_cash_flow.drop("SimFinId")
 
     return (
-        f"## {freq} cash flow statement for {ticker} released on {str(latest_cash_flow['Publish Date'])[0:10]}: \n"
+        f"## {_('dataflow_reports.cashflow_released', freq=freq, ticker=ticker, date=str(latest_cash_flow['Publish Date'])[0:10])} \n"
         + str(latest_cash_flow)
-        + "\n\nThis includes metadata like reporting dates and currency, share details, and a breakdown of cash movements. Operating activities show cash generated from core business operations, including net income adjustments for non-cash items and working capital changes. Investing activities cover asset acquisitions/disposals and investments. Financing activities include debt transactions, equity issuances/repurchases, and dividend payments. The net change in cash represents the overall increase or decrease in the company's cash position during the reporting period."
+        + "\n\n" + _("dataflow_reports.cashflow_description")
     )
 
 
@@ -287,9 +287,9 @@ def get_simfin_income_statements(
     latest_income = latest_income.drop("SimFinId")
 
     return (
-        f"## {freq} income statement for {ticker} released on {str(latest_income['Publish Date'])[0:10]}: \n"
+        f"## {_('dataflow_reports.income_statement_released', freq=freq, ticker=ticker, date=str(latest_income['Publish Date'])[0:10])} \n"
         + str(latest_income)
-        + "\n\nThis includes metadata like reporting dates and currency, share details, and a comprehensive breakdown of the company's financial performance. Starting with Revenue, it shows Cost of Revenue and resulting Gross Profit. Operating Expenses are detailed, including SG&A, R&D, and Depreciation. The statement then shows Operating Income, followed by non-operating items and Interest Expense, leading to Pretax Income. After accounting for Income Tax and any Extraordinary items, it concludes with Net Income, representing the company's bottom-line profit or loss for the period."
+        + "\n\n" + _("dataflow_reports.income_statement_description")
     )
 
 
@@ -316,7 +316,7 @@ def get_google_news(
     if len(news_results) == 0:
         return ""
 
-    return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
+    return f"## {_('dataflow_reports.google_news_from_to', query=query, before=before, curr_date=curr_date)}\n\n{news_str}"
 
 
 def get_reddit_global_news(
@@ -368,7 +368,7 @@ def get_reddit_global_news(
         else:
             news_str += f"### {post['title']}\n\n{post['content']}\n\n"
 
-    return f"## Global News Reddit, from {before} to {curr_date}:\n{news_str}"
+    return f"## {_('dataflow_reports.global_news_reddit_from_to', before=before, curr_date=curr_date)}\n{news_str}"
 
 
 def get_reddit_company_news(
@@ -427,7 +427,7 @@ def get_reddit_company_news(
         else:
             news_str += f"### {post['title']}\n\n{post['content']}\n\n"
 
-    return f"##{ticker} News Reddit, from {before} to {curr_date}:\n\n{news_str}"
+    return f"## {_('dataflow_reports.company_news_reddit_from_to', ticker=ticker, before=before, curr_date=curr_date)}\n\n{news_str}"
 
 
 def get_stock_stats_indicators_window(
@@ -515,7 +515,7 @@ def get_stock_stats_indicators_window(
 
     if indicator not in best_ind_params:
         raise ValueError(
-            f"Indicator {indicator} is not supported. Please choose from: {list(best_ind_params.keys())}"
+            _("dataflow_reports.error_indicator_not_supported", indicator=indicator, indicators=list(best_ind_params.keys()))
         )
 
     end_date = curr_date
@@ -557,7 +557,7 @@ def get_stock_stats_indicators_window(
             curr_date = curr_date - relativedelta(days=1)
 
     result_str = (
-        f"## {indicator} {_('reports.indicator_values_from_to', before=before.strftime('%Y-%m-%d'), end_date=end_date)}:\n\n"
+        f"## {_('dataflow_reports.indicator_values_from_to', indicator=indicator, before=before.strftime('%Y-%m-%d'), end_date=end_date)}:\n\n"
         + ind_string
         + "\n\n"
         + best_ind_params.get(indicator, _("reports.no_description_available"))
@@ -588,7 +588,7 @@ def get_stockstats_indicator(
         )
     except Exception as e:
         print(
-            f"Error getting stockstats indicator data for indicator {indicator} on {curr_date}: {e}"
+            _("dataflow_reports.error_getting_indicator_data", indicator=indicator, curr_date=curr_date, error=e)
         )
         return ""
 
@@ -631,7 +631,7 @@ def get_YFin_data_window(
         df_string = filtered_data.to_string()
 
     return (
-        f"## Raw Market Data for {symbol} from {start_date} to {curr_date}:\n\n"
+        f"## {_('dataflow_reports.raw_market_data_from_to', symbol=symbol, start_date=start_date, curr_date=curr_date)}:\n\n"
         + df_string
     )
 
@@ -654,7 +654,7 @@ def get_YFin_data_online(
     # Check if data is empty
     if data.empty:
         return (
-            f"No data found for symbol '{symbol}' between {start_date} and {end_date}"
+            _("dataflow_reports.no_data_found", symbol=symbol, start_date=start_date, end_date=end_date)
         )
 
     # Remove timezone info from index for cleaner output
@@ -671,9 +671,9 @@ def get_YFin_data_online(
     csv_string = data.to_csv()
 
     # Add header information
-    header = f"# Stock data for {symbol.upper()} from {start_date} to {end_date}\n"
-    header += f"# Total records: {len(data)}\n"
-    header += f"# Data retrieved on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+    header = f"# {_('dataflow_reports.stock_data_header', symbol=symbol.upper(), start_date=start_date, end_date=end_date)}\n"
+    header += f"# {_('dataflow_reports.stock_data_total_records', count=len(data))}\n"
+    header += f"# {_('dataflow_reports.stock_data_retrieved', datetime=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))}\n\n"
 
     return header + csv_string
 
@@ -693,7 +693,7 @@ def get_YFin_data(
 
     if end_date > "2025-03-25":
         raise Exception(
-            f"Get_YFin_Data: {end_date} is outside of the data range of 2015-01-01 to 2025-03-25"
+            _("dataflow_reports.data_outside_range", end_date=end_date)
         )
 
     # Extract just the date part for comparison
@@ -723,7 +723,7 @@ def get_stock_news_openai(ticker, curr_date):
             messages=[
                 {
                     "role": "system",
-                    "content": f"Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period."
+                    "content": _("dataflow_reports.search_social_media_prompt", ticker=ticker, curr_date=curr_date)
                 }
             ],
             temperature=1,
@@ -732,7 +732,7 @@ def get_stock_news_openai(ticker, curr_date):
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error fetching stock news: {str(e)}"
+        return _("dataflow_reports.error_fetching_news", error=str(e))
 
 
 def get_global_news_openai(curr_date):
@@ -745,7 +745,7 @@ def get_global_news_openai(curr_date):
             messages=[
                 {
                     "role": "system",
-                    "content": f"Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period."
+                    "content": _("dataflow_reports.search_global_news_prompt", curr_date=curr_date)
                 }
             ],
             temperature=1,
@@ -754,7 +754,7 @@ def get_global_news_openai(curr_date):
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error fetching global news: {str(e)}"
+        return _("dataflow_reports.error_fetching_global_news", error=str(e))
 
 
 def get_fundamentals_openai(ticker, curr_date):
@@ -767,7 +767,7 @@ def get_fundamentals_openai(ticker, curr_date):
             messages=[
                 {
                     "role": "system",
-                    "content": f"Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc"
+                    "content": _("dataflow_reports.search_fundamentals_prompt", ticker=ticker, curr_date=curr_date)
                 }
             ],
             temperature=1,
@@ -776,4 +776,4 @@ def get_fundamentals_openai(ticker, curr_date):
         )
         return response.choices[0].message.content
     except Exception as e:
-        return f"Error fetching fundamentals: {str(e)}"
+        return _("dataflow_reports.error_fetching_fundamentals", error=str(e))

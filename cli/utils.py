@@ -4,7 +4,7 @@ from rich.console import Console
 
 from cli.models import AnalystType
 from tradingagents.config_manager import get_config
-from tradingagents.i18n import _
+from tradingagents.i18n import _, init_i18n
 
 # Create a custom checkbox function with i18n support
 def localized_checkbox(
@@ -199,28 +199,28 @@ console = Console()
 def _get_fallback_shallow_models() -> Dict[str, List[Tuple[str, str]]]:
     """Get fallback shallow thinking models for each provider."""
     return {
-        "openai": [("Quick Think: gpt-4o-mini", "gpt-4o-mini")],
-        "anthropic": [("Quick Think: claude-3-5-haiku-latest", "claude-3-5-haiku-latest")],
-        "google": [("Quick Think: gemini-2.0-flash-lite", "gemini-2.0-flash-lite")],
-        "openrouter": [("Quick Think: meta-llama/llama-3.3-8b-instruct:free", "meta-llama/llama-3.3-8b-instruct:free")],
-        "kimi (moonshot)": [("Quick Think: moonshot-v1-8k", "moonshot-v1-8k")],
-        "zhipu ai": [("Quick Think: glm-4-flash", "glm-4-flash")],
-        "deepseek": [("Quick Think: deepseek-chat", "deepseek-chat")],
-        "ollama": [("Quick Think: llama3.1", "llama3.1")],
+        "openai": [("快速思考: gpt-4o-mini", "gpt-4o-mini")],
+        "anthropic": [("快速思考: claude-3-5-haiku-latest", "claude-3-5-haiku-latest")],
+        "google": [("快速思考: gemini-2.0-flash-lite", "gemini-2.0-flash-lite")],
+        "openrouter": [("快速思考: meta-llama/llama-3.3-8b-instruct:free", "meta-llama/llama-3.3-8b-instruct:free")],
+        "kimi (moonshot)": [("快速思考: moonshot-v1-8k", "moonshot-v1-8k")],
+        "zhipu ai": [("快速思考: glm-4-flash", "glm-4-flash")],
+        "deepseek": [("快速思考: deepseek-chat", "deepseek-chat")],
+        "ollama": [("快速思考: llama3.1", "llama3.1")],
     }
 
 
 def _get_fallback_deep_models() -> Dict[str, List[Tuple[str, str]]]:
     """Get fallback deep thinking models for each provider."""
     return {
-        "openai": [("Deep Think: o4-mini", "o4-mini")],
-        "anthropic": [("Deep Think: claude-3-5-sonnet-latest", "claude-3-5-sonnet-latest")],
-        "google": [("Deep Think: gemini-2.5-pro-preview-06-05", "gemini-2.5-pro-preview-06-05")],
-        "openrouter": [("Deep Think: deepseek/deepseek-chat-v3-0324:free", "deepseek/deepseek-chat-v3-0324:free")],
-        "kimi (moonshot)": [("Deep Think: moonshot-v1-32k", "moonshot-v1-32k")],
-        "zhipu ai": [("Deep Think: glm-4-plus", "glm-4-plus")],
-        "deepseek": [("Deep Think: deepseek-coder", "deepseek-coder")],
-        "ollama": [("Deep Think: llama3.1", "llama3.1")],
+        "openai": [("深度思考: o4-mini", "o4-mini")],
+        "anthropic": [("深度思考: claude-3-5-sonnet-latest", "claude-3-5-sonnet-latest")],
+        "google": [("深度思考: gemini-2.5-pro-preview-06-05", "gemini-2.5-pro-preview-06-05")],
+        "openrouter": [("深度思考: deepseek/deepseek-chat-v3-0324:free", "deepseek/deepseek-chat-v3-0324:free")],
+        "kimi (moonshot)": [("深度思考: moonshot-v1-32k", "moonshot-v1-32k")],
+        "zhipu ai": [("深度思考: glm-4-plus", "glm-4-plus")],
+        "deepseek": [("深度思考: deepseek-coder", "deepseek-coder")],
+        "ollama": [("深度思考: llama3.1", "llama3.1")],
     }
 
 def get_analyst_order():
@@ -342,9 +342,9 @@ def select_research_depth() -> int:
     
     # Ensure translations are working
     if select_text == "cli.select_research_depth":
-        select_text = "Select Your [Research Depth]:"
+        select_text = "选择您的 [研究深度]："
     if nav_text == "cli.navigation_instruction":
-        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
+        nav_text = "- 使用方向键导航\n- 按回车键选择"
     
     choice = questionary.select(
         select_text,
@@ -393,7 +393,7 @@ def select_shallow_thinking_agent(provider) -> str:
     # If still no options, use fallback
     if not model_options:
         SHALLOW_AGENT_OPTIONS = _get_fallback_shallow_models()
-        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o-mini")])
+        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o-mini")]))
 
     # Get translations with fallback
     select_text = _("cli.select_shallow_thinking")
@@ -401,9 +401,9 @@ def select_shallow_thinking_agent(provider) -> str:
     
     # Ensure translations are working
     if select_text == "cli.select_shallow_thinking":
-        select_text = "Select Your [Quick Thinking LLM Engine]:"
+        select_text = "选择您的 [快速思考 LLM 引擎]："
     if nav_text == "cli.navigation_instruction":
-        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
+        nav_text = "- 使用方向键导航\n- 按回车键选择"
     
     choice = questionary.select(
         select_text,
@@ -467,9 +467,9 @@ def select_deep_thinking_agent(provider) -> str:
     
     # Ensure translations are working
     if select_text == "cli.select_deep_thinking":
-        select_text = "Select Your [Deep Thinking LLM Engine]:"
+        select_text = "选择您的 [深度思考 LLM 引擎]："
     if nav_text == "cli.navigation_instruction":
-        nav_text = "- Use arrow keys to navigate\n- Press enter to select"
+        nav_text = "- 使用方向键导航\n- 按回车键选择"
     
     choice = questionary.select(
         select_text,

@@ -102,7 +102,7 @@
   },
   "agents": {
     "market_analyst": {
-      "role": "You are a trading assistant tasked with analyzing financial markets. Your role is to select the **most relevant indicators** for a given market condition or trading strategy from the following list. The goal is to choose up to **8 indicators** that provide complementary insights without redundancy. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a trading assistant tasked with analyzing financial markets. Your role is to select the **most relevant indicators** for a given market condition or trading strategy from the following list. The goal is to choose up to **8 indicators** that provide complementary insights without redundancy. Please write your analysis reports and all output content in English.",
       "indicators": {
         "moving_averages": "Moving Averages:",
         "macd": "MACD Related:",
@@ -116,19 +116,19 @@
       "report_instruction": "Write a very detailed and nuanced report of the trends you observe. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
     },
     "social_analyst": {
-      "role": "You are a social media and company specific news researcher/analyst tasked with analyzing social media posts, recent company news, and public sentiment for a specific company over the past week. You will be given a company's name your objective is to write a comprehensive long report detailing your analysis, insights, and implications for traders and investors on this company's current state after looking at social media and what people are saying about that company, analyzing sentiment data of what people feel each day about the company, and looking at recent company news. Try to look at all sources possible from social media to sentiment to news. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a social media and company specific news researcher/analyst tasked with analyzing social media posts, recent company news, and public sentiment for a specific company over the past week. You will be given a company's name your objective is to write a comprehensive long report detailing your analysis, insights, and implications for traders and investors on this company's current state after looking at social media and what people are saying about that company, analyzing sentiment data of what people feel each day about the company, and looking at recent company news. Try to look at all sources possible from social media to sentiment to news. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
       "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
     },
     "news_analyst": {
-      "role": "You are a news researcher tasked with analyzing recent news and trends over the past week. Please write a comprehensive report of the current state of the world that is relevant for trading and macroeconomics. Look at news from EODHD, and finnhub to be comprehensive. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a news researcher tasked with analyzing recent news and trends over the past week. Please write a comprehensive report of the current state of the world that is relevant for trading and macroeconomics. Look at news from EODHD, and finnhub to be comprehensive. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
       "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
     },
     "fundamentals_analyst": {
-      "role": "You are a researcher tasked with analyzing fundamental information over the past week about a company. Please write a comprehensive report of the company's fundamental information such as financial documents, company profile, basic company financials, company financial history, insider sentiment and insider transactions to gain a full view of the company's fundamental information to inform traders. Make sure to include as much detail as possible. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a researcher tasked with analyzing fundamental information over the past week about a company. Please write a comprehensive report of the company's fundamental information such as financial documents, company profile, basic company financials, company financial history, insider sentiment and insider transactions to gain a full view of the company's fundamental information to inform traders. Make sure to include as much detail as possible. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions. Please write your analysis reports and all output content in English.",
       "report_instruction": "Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."
     },
     "bull_researcher": {
-      "role": "You are a Bull Analyst advocating for investing in the stock. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a Bull Analyst advocating for investing in the stock. Please write your analysis reports and all output content in English.",
       "focus_areas": {
         "growth": "Growth Potential:",
         "advantages": "Competitive Advantages:",
@@ -138,7 +138,7 @@
       }
     },
     "bear_researcher": {
-      "role": "You are a Bear Analyst advocating against investing in the stock. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a Bear Analyst advocating against investing in the stock. Please write your analysis reports and all output content in English.",
       "focus_areas": {
         "risks": "Risk Factors:",
         "weaknesses": "Weaknesses:",
@@ -148,10 +148,10 @@
       }
     },
     "research_manager": {
-      "role": "As the portfolio manager and debate facilitator, your role is to critically evaluate this round of debate and make a definitive decision: align with the bear analyst, the bull analyst, or choose Hold only if it is strongly justified based on the arguments presented. Please write your analysis reports and all output content in English."
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】As the portfolio manager and debate facilitator, your role is to critically evaluate this round of debate and make a definitive decision: align with the bear analyst, the bull analyst, or choose Hold only if it is strongly justified based on the arguments presented. Please write your analysis reports and all output content in English."
     },
     "trader": {
-      "role": "You are a trading agent analyzing market data to make investment decisions. Please write your analysis reports and all output content in English.",
+      "role": "【IMPORTANT: Please use English for all analysis, reasoning, and output】You are a trading agent analyzing market data to make investment decisions. Please write your analysis reports and all output content in English.",
       "plan_intro": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}.",
       "context_content": "Based on a comprehensive analysis by a team of analysts, here is an investment plan tailored for {company_name}. This plan incorporates insights from current technical market trends, macroeconomic indicators, and social media sentiment. Use this plan as a foundation for evaluating your next trading decision.\n\nProposed Investment Plan: {investment_plan}\n\nLeverage these insights to make an informed and strategic decision.",
       "system_instruction": "Based on your analysis, provide a specific recommendation to buy, sell, or hold. End with a firm decision and always conclude your response with 'FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL**' to confirm your recommendation. Do not forget to utilize lessons from past decisions to learn from your mistakes. Here is some reflections from similar situations you traded in and the lessons learned: {past_memory_str}"
@@ -160,12 +160,14 @@
       "risky": "Aggressive Analyst",
       "neutral": "Neutral Analyst",
       "safe": "Conservative Analyst",
-      "portfolio_manager": "Portfolio Manager"
+      "portfolio_manager": "Portfolio Manager",
+      "risky_prompt": "【IMPORTANT: Please use English for all analysis, reasoning, and output】As the Risky Risk Analyst, your role is to actively champion high-reward, high-risk opportunities, emphasizing bold strategies and competitive advantages. When evaluating the trader's decision or plan, focus intently on the potential upside, growth potential, and innovative benefits—even when these come with elevated risk. Use the provided market data and sentiment analysis to strengthen your arguments and challenge the opposing views. Specifically, respond directly to each point made by the conservative and neutral analysts, countering with data-driven rebuttals and persuasive reasoning. Highlight where their caution might miss critical opportunities or where their assumptions may be overly conservative. Here is the trader's decision:\n\n{trader_decision}\n\nYour task is to create a compelling case for the trader's decision by questioning and critiquing the conservative and neutral stances to demonstrate why your high-reward perspective offers the best path forward. Incorporate insights from the following sources into your arguments:\n\nMarket Research Report: {market_research_report}\nSocial Media Sentiment Report: {sentiment_report}\nLatest World Affairs Report: {news_report}\nCompany Fundamentals Report: {fundamentals_report}\nHere is the current conversation history: {history} Here are the last arguments from the conservative analyst: {current_safe_response} Here are the last arguments from the neutral analyst: {current_neutral_response}. If there are no responses from the other viewpoints, do not halluncinate and just present your point.\n\nEngage actively by addressing any specific concerns raised, refuting the weaknesses in their logic, and asserting the benefits of risk-taking to outpace market norms. Maintain a focus on debating and persuading, not just presenting data. Challenge each counterpoint to underscore why a high-risk approach is optimal. Output conversationally as if you are speaking without any special formatting."
     },
     "system": {
       "base_instruction": "You are a helpful AI assistant, collaborating with other assistants. Use the provided tools to progress towards answering the question. If you are unable to fully answer, that's OK; another assistant with different tools will help where you left off. Execute what you can to make progress. If you or any other assistant has the FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** or deliverable, prefix your response with FINAL TRANSACTION PROPOSAL: **BUY/HOLD/SELL** so the team knows to stop.",
       "reference_info": "For your reference, the current date is {current_date}. We are looking at the company {ticker}",
-      "reference_info_news": "For your reference, the current date is {current_date}. We are analyzing global news and macroeconomic trends."
+      "reference_info_news": "For your reference, the current date is {current_date}. We are analyzing global news and macroeconomic trends.",
+      "tools_access": "You have access to the following tools: {tool_names}."
     }
   },
   "ui": {
@@ -224,6 +226,7 @@
       "stats": "Statistics"
     },
     "stats": {
+      "title": "Statistics",
       "tool_calls": "Tool Calls",
       "llm_calls": "LLM Calls",
       "generated_reports": "Generated Reports",
@@ -319,5 +322,34 @@
   "main": {
     "import_error": "❌ Failed to import TradingAgentsGraph: {error}",
     "dependency_issues": "This may be due to dependency issues. Please check your environment."
+  },
+  "dataflow_reports": {
+    "news_from_to": "{ticker} News, from {before} to {curr_date}:",
+    "insider_sentiment_from_to": "{ticker} Insider Sentiment Data for {before} to {curr_date}:",
+    "insider_transactions_from_to": "{ticker} insider transactions from {before} to {curr_date}:",
+    "balance_sheet_released": "{freq} balance sheet for {ticker} released on {date}:",
+    "balance_sheet_description": "This includes metadata like reporting dates and currency, share details, and a breakdown of assets, liabilities, and equity. Assets are grouped as current (liquid items like cash and receivables) and noncurrent (long-term investments and property). Liabilities are split between short-term obligations and long-term debts, while equity reflects shareholder funds such as paid-in capital and retained earnings. Together, these components ensure that total assets equal the sum of liabilities and equity.",
+    "cashflow_released": "{freq} cash flow statement for {ticker} released on {date}:",
+    "cashflow_description": "This includes metadata like reporting dates and currency, share details, and a breakdown of cash movements. Operating activities show cash generated from core business operations, including net income adjustments for non-cash items and working capital changes. Investing activities cover asset acquisitions/disposals and investments. Financing activities include debt transactions, equity issuances/repurchases, and dividend payments. The net change in cash represents the overall increase or decrease in the company's cash position during the reporting period.",
+    "income_statement_released": "{freq} income statement for {ticker} released on {date}:",
+    "income_statement_description": "This includes metadata like reporting dates and currency, share details, and a comprehensive breakdown of the company's financial performance. Starting with Revenue, it shows Cost of Revenue and resulting Gross Profit. Operating Expenses are detailed, including SG&A, R&D, and Depreciation. The statement then shows Operating Income, followed by non-operating items and Interest Expense, leading to Pretax Income. After accounting for Income Tax and any Extraordinary items, it concludes with Net Income, representing the company's bottom-line profit or loss for the period.",
+    "google_news_from_to": "{query} Google News, from {before} to {curr_date}:",
+    "global_news_reddit_from_to": "Global News Reddit, from {before} to {curr_date}:",
+    "company_news_reddit_from_to": "{ticker} News Reddit, from {before} to {curr_date}:",
+    "indicator_values_from_to": "{indicator} values from {before} to {end_date}:",
+    "raw_market_data_from_to": "Raw Market Data for {symbol} from {start_date} to {curr_date}:",
+    "stock_data_header": "Stock data for {symbol} from {start_date} to {end_date}",
+    "stock_data_total_records": "Total records: {count}",
+    "stock_data_retrieved": "Data retrieved on: {datetime}",
+    "error_indicator_not_supported": "Indicator {indicator} is not supported. Please choose from: {indicators}",
+    "error_getting_indicator_data": "Error getting stockstats indicator data for indicator {indicator} on {curr_date}: {error}",
+    "no_data_found": "No data found for symbol '{symbol}' between {start_date} and {end_date}",
+    "data_outside_range": "Get_YFin_Data: {end_date} is outside of the data range of 2015-01-01 to 2025-03-25",
+    "error_fetching_news": "Error fetching stock news: {error}",
+    "error_fetching_global_news": "Error fetching global news: {error}",
+    "error_fetching_fundamentals": "Error fetching fundamentals: {error}",
+    "search_social_media_prompt": "Can you search Social Media for {ticker} from 7 days before {curr_date} to {curr_date}? Make sure you only get the data posted during that period.",
+    "search_global_news_prompt": "Can you search global or macroeconomics news from 7 days before {curr_date} to {curr_date} that would be informative for trading purposes? Make sure you only get the data posted during that period.",
+    "search_fundamentals_prompt": "Can you search Fundamental for discussions on {ticker} during of the month before {curr_date} to the month of {curr_date}. Make sure you only get the data posted during that period. List as a table, with PE/PS/Cash flow/ etc"
   }
 }

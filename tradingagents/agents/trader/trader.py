@@ -1,7 +1,7 @@
 import functools
 import time
 import json
-from tradingagents.i18n import _
+from tradingagents.i18n import _, get_locale
 
 
 def create_trader(llm, memory):
@@ -24,7 +24,6 @@ def create_trader(llm, memory):
             past_memory_str = "No past memories found."
 
         # 根据当前语言配置生成提示词
-        from tradingagents.i18n import get_locale
         current_locale = get_locale()
         
         system_role = _("agents.trader.role")
