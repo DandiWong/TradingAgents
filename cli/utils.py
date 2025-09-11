@@ -393,7 +393,7 @@ def select_shallow_thinking_agent(provider) -> str:
     # If still no options, use fallback
     if not model_options:
         SHALLOW_AGENT_OPTIONS = _get_fallback_shallow_models()
-        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o-mini")]))
+        model_options = SHALLOW_AGENT_OPTIONS.get(provider.lower(), [(_("cli.model_selection.default_model"), "gpt-4o-mini")])
 
     # Get translations with fallback
     select_text = _("cli.select_shallow_thinking")

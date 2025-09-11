@@ -36,7 +36,7 @@ def create_risky_debator(llm):
 
         response = llm.invoke(prompt)
 
-        argument = f"Risky Analyst: {response.content}"
+        argument = f"{_('team.roles.risk_analyst_risky')}: {response.content}"
 
         new_risk_debate_state = {
             "history": history + "\n" + argument,

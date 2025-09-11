@@ -50,9 +50,19 @@ class ConditionalLogic:
             state["investment_debate_state"]["count"] >= 2 * self.max_debate_rounds
         ):  # 3 rounds of back-and-forth between 2 agents
             return "Research Manager"
-        if state["investment_debate_state"]["current_response"].startswith("Bull"):
+        
+        # Check who spoke last by looking at the history
+        current_response = state["investment_debate_state"]["current_response"]
+        # Since responses now contain localized role names, we need a different approach
+        # Let's check the bull_history and bear_history to see who spoke last
+        bull_history = state["investment_debate_state"].get("bull_history", "")
+        bear_history = state["investment_debate_state"].get("bear_history", "")
+        
+        # If bull history is longer or equal, it's bear's turn
+        if len(bull_history) >= len(bear_history):
             return "Bear Researcher"
-        return "Bull Researcher"
+        else:
+            return "Bull Researcher"
 
     def should_continue_risk_analysis(self, state: AgentState) -> str:
         """Determine if risk analysis should continue."""

@@ -145,6 +145,8 @@ def init_i18n(locale_dir: Optional[str] = None, default_locale: str = "en-US") -
     """初始化全局i18n管理器"""
     global _i18n_manager
     _i18n_manager = I18nManager(locale_dir, default_locale)
+    # 设置当前语言为默认语言
+    _i18n_manager.set_locale(default_locale)
     return _i18n_manager
 
 

@@ -102,6 +102,7 @@ cd TradingAgents
 ```
 
 Create a virtual environment in any of your favorite environment managers:
+If you have not install miniconda/anaconda, you can just skip this.
 ```bash
 conda create -n tradingagents python=3.13
 conda activate tradingagents
@@ -112,17 +113,35 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### Required APIs
+### Initial Setup
 
-You will also need the FinnHub API for financial data. All of our code is implemented with the free tier.
+TradingAgents now uses a configuration-based approach for API keys and settings. No environment variables are required.
+
+1. **Copy the example configuration:**
 ```bash
-export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
+cp config.example.json config.json
 ```
 
-You will need the OpenAI API for all the agents.
-```bash
-export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+2. **Configure your API keys in `config.json`:**
+```json
+{
+  "llm_providers": {
+    "openai": {
+      "api_key": "your-openai-api-key-here"
+    },
+    "anthropic": {
+      "api_key": "your-anthropic-api-key-here"
+    }
+  }
+}
 ```
+
+3. **Launch the CLI to complete setup:**
+```bash
+python -m cli.main
+```
+
+The CLI will guide you through selecting providers and models, with visual indicators showing which providers have API keys configured.
 
 ### CLI Usage
 
@@ -199,7 +218,7 @@ print(decision)
 
 ## Configuration
 
-TradingAgents now uses a JSON-based configuration system for managing LLM providers, API keys, and project settings. The configuration is stored in `config.json` in the project root.
+TradingAgents uses a comprehensive JSON-based configuration system for managing LLM providers, API keys, project settings, and internationalization. The configuration is stored in `config.json` in the project root.
 
 ### Configuration Structure
 
@@ -210,30 +229,156 @@ The configuration file contains the following sections:
 - **active_provider**: Currently selected LLM provider
 - **debate_settings**: Agent debate and discussion parameters
 - **tool_settings**: Tool usage preferences
+- **embedding_settings**: Embedding configuration for memory
+- **language**: Interface language setting
 
-### Supported LLM Providers
+### LLM Provider Configuration
 
-- **OpenAI**: GPT-4o-mini, O4-mini
-- **Anthropic**: Claude-3.5-haiku, Claude-3.5-sonnet
-- **Google**: Gemini-2.0-flash-lite, Gemini-2.5-pro
-- **OpenRouter**: Meta Llama, DeepSeek models
-- **Kimi (Moonshot)**: Moonshot-v1 models
-- **Zhipu AI**: GLM-4 series models
-- **DeepSeek**: DeepSeek Chat and Coder models
-- **Ollama**: Local models
-
-### API Key Configuration
-
-Add your API keys directly in the `config.json` file:
-
+#### OpenAI
 ```json
 {
   "llm_providers": {
     "openai": {
-      "api_key": "your-openai-api-key-here"
-    },
+      "models": {
+        "quick_think": "gpt-4o-mini",
+        "deep_think": "gpt-4o"
+      },
+      "base_url": "https://api.openai.com/v1",
+      "api_key": "your-openai-api-key-here",
+      "description": "Original OpenAI models"
+    }
+  }
+}
+```
+
+#### Anthropic
+```json
+{
+  "llm_providers": {
     "anthropic": {
-      "api_key": "your-anthropic-api-key-here"
+      "models": {
+        "quick_think": "claude-sonnet-4",
+        "deep_think": "claude-opus-4"
+      },
+      "base_url": "https://api.anthropic.com/",
+      "api_key": "your-anthropic-api-key-here",
+      "description": "Anthropic Claude models"
+    }
+  }
+}
+```
+
+#### Google
+```json
+{
+  "llm_providers": {
+    "google": {
+      "models": {
+        "quick_think": "gemini-2.5-flash",
+        "deep_think": "gemini-2.5-pro"
+      },
+      "base_url": "https://generativelanguage.googleapis.com/v1",
+      "api_key": "your-google-api-key-here",
+      "description": "Google Gemini models"
+    }
+  }
+}
+```
+
+#### OpenRouter (Multi-provider Aggregator)
+```json
+{
+  "llm_providers": {
+    "openrouter": {
+      "models": {
+        "quick_think": "z-ai/glm-4.5-air:free",
+        "deep_think": "deepseek/deepseek-chat-v3.1:free"
+      },
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key": "your-openrouter-api-key-here",
+      "description": "Aggregator service with multiple model providers"
+    }
+  }
+}
+```
+
+#### Chinese Models
+```json
+{
+  "llm_providers": {
+    "kimi": {
+      "models": {
+        "quick_think": "kimi-k2-0905-preview",
+        "deep_think": "kimi-k2-0905-preview"
+      },
+      "base_url": "https://api.moonshot.cn/v1",
+      "api_key": "your-moonshot-api-key-here",
+      "description": "Chinese AI models with strong multilingual capabilities"
+    },
+    "zhipu": {
+      "models": {
+        "quick_think": "glm-4.5-air",
+        "deep_think": "glm-4.5"
+      },
+      "base_url": "https://open.bigmodel.cn/api/paas/v4",
+      "api_key": "your-zhipu-api-key-here",
+      "description": "Developer of GLM series models"
+    },
+    "deepseek": {
+      "models": {
+        "quick_think": "deepseek-chat",
+        "deep_think": "deepseek-reasoner"
+      },
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key": "your-deepseek-api-key-here",
+      "description": "Advanced reasoning models"
+    }
+  }
+}
+```
+
+#### Local Models (Ollama)
+```json
+{
+  "llm_providers": {
+    "ollama": {
+      "models": {
+        "quick_think": "llama3.1",
+        "deep_think": "llama3.1"
+      },
+      "base_url": "http://localhost:11434/v1",
+      "api_key": "",
+      "description": "Local models (no API key required)"
+    }
+  }
+}
+```
+
+### Internationalization Configuration
+
+TradingAgents supports multiple languages for the interface. Set your preferred language in the configuration:
+
+```json
+{
+  "language": "zh-CN"  // Options: "en-US" (English), "zh-CN" (Chinese)
+}
+```
+
+#### Available Languages
+- **en-US**: English (default)
+- **zh-CN**: Simplified Chinese
+
+When set to Chinese, all interface elements, prompts, and agent communications will be in Chinese, providing a fully localized experience.
+
+### Financial Data Configuration
+
+For financial data, TradingAgents uses FinnHub API. Configure it in the `llm_providers` section:
+
+```json
+{
+  "llm_providers": {
+    "finnhub": {
+      "api_key": "your-finnhub-api-key-here"
     }
   }
 }
@@ -241,7 +386,7 @@ Add your API keys directly in the `config.json` file:
 
 ### CLI Configuration
 
-Use the CLI to configure providers and models:
+Use the interactive CLI to configure providers and models:
 
 ```bash
 # Launch the interactive CLI
@@ -249,9 +394,26 @@ python -m cli.main
 
 # The CLI will show available providers with visual indicators:
 # 🔑 = API key configured  🔒 = No API key configured
+
+# Navigate through the setup process:
+# 1. Select your LLM provider
+# 2. Choose quick think and deep think models
+# 3. Configure other settings as needed
 ```
 
-You can view the full list of configuration options in `config.json`.
+### Configuration File Template
+
+See `config.example.json` for a complete template with all available options. You can copy it to `config.json` and customize as needed.
+
+### Model Recommendations
+
+For cost-effective testing:
+- **Quick Thinking**: `gpt-4o-mini`, `claude-3-5-haiku-latest`, `gemini-2.0-flash-lite`
+- **Deep Thinking**: `gpt-4o`, `claude-3-5-sonnet-latest`, `gemini-2.5-pro`
+
+For production use:
+- **Quick Thinking**: `gpt-4o`, `claude-3-5-sonnet-latest`
+- **Deep Thinking**: `o1-preview`, `claude-3-opus-latest`, `gemini-2.5-pro`
 
 ## Contributing
 

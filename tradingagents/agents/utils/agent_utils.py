@@ -13,7 +13,7 @@ from langchain_openai import ChatOpenAI
 import tradingagents.dataflows.interface as interface
 from tradingagents.config_manager import get_config
 from langchain_core.messages import HumanMessage
-from tradingagents.i18n import _, init_i18n
+from tradingagents.i18n import _, init_i18n, get_i18n_manager
 from tradingagents.config_manager import get_config
 
 
@@ -25,7 +25,9 @@ def create_msg_delete():
         # Initialize i18n if needed
         config_manager = get_config()
         language = config_manager.get_language()
-        init_i18n(locale_dir="./tradingagents/i18n/locales", default_locale=language)
+        current_manager = get_i18n_manager()
+        if current_manager.get_locale() != language:
+            init_i18n(locale_dir="./tradingagents/i18n/locales", default_locale=language)
         
         # Remove all messages
         removal_operations = [RemoveMessage(id=m.id) for m in messages]

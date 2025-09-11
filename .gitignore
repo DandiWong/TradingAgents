@@ -12,3 +12,5 @@ results/*
 .claude
 CLAUDE.md
 .conda-env
+AGENTS.md
+CODEBUDDY.md

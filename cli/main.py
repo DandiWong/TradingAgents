@@ -1044,7 +1044,7 @@ def run_analysis():
                         update_research_team_status("in_progress")
                         message_buffer.add_message(
                             _("ui.reasoning"),
-                            f"Research Manager: {debate_state['judge_decision']}",
+                            f"{_('team.roles.research_manager')}: {debate_state['judge_decision']}",
                         )
                         # Update research report with final decision
                         message_buffer.update_report_section(
